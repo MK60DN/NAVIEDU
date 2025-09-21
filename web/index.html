@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath - 知识经济学习平台</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- CDN 资源 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0b0e11 0%, #1e2329 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(30, 35, 41, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #2b3139;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fcd535;
+        }
+
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #fcd535, #f7b500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #000;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0;
+            background: #2b3139;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #848e9c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(252, 213, 53, 0.1);
+            color: #fcd535;
+        }
+
+        .nav-item.active {
+            background: #fcd535;
+            color: #000;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #fcd535, #f7b500);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(252, 213, 53, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #fcd535;
+            color: #fcd535;
+        }
+
+        .btn-outline:hover {
+            background: #fcd535;
+            color: #000;
+        }
+
+        .btn-secondary {
+            background: #2b3139;
+            color: #ffffff;
+            border: 1px solid #3c4248;
+        }
+
+        .btn-secondary:hover {
+            background: #3c4248;
+        }
+
+        .btn-success {
+            background: #02c076;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f84960;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            min-height: calc(100vh - 64px);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: rgba(30, 35, 41, 0.9);
+            border: 1px solid #2b3139;
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(252, 213, 53, 0.3);
+        }
+
+        /* 币安交易界面布局 */
+        .trading-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            gap: 1rem;
+            height: calc(100vh - 150px);
+        }
+
+        .trading-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .trading-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* 代币信息栏 */
+        .token-info-bar {
+            background: rgba(30, 35, 41, 0.9);
+            border: 1px solid #2b3139;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        /* K线图区域 */
+        .chart-section {
+            flex: 1;
+            background: rgba(30, 35, 41, 0.9);
+            border: 1px solid #2b3139;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #2b3139;
+        }
+
+        .kline-chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+        }
+
+        /* 学习活动影响面板 */
+        .activity-impact-panel {
+            background: rgba(30, 35, 41, 0.9);
+            border: 1px solid #2b3139;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        /* 订单簿样式 */
+        .orderbook {
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .orderbook-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 0.5rem 1rem;
+            background: #2b3139;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #848e9c;
+        }
+
+        .orderbook-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 0.3rem 1rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .orderbook-row:hover {
+            background: rgba(252, 213, 53, 0.1);
+        }
+
+        .orderbook-bar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            opacity: 0.15;
+            transition: opacity 0.2s ease;
+        }
+
+        .orderbook-bar-buy {
+            background: #02c076;
+        }
+
+        .orderbook-bar-sell {
+            background: #f84960;
+        }
+
+        .orderbook-spread {
+            background: #2b3139;
+            margin: 0.5rem 0;
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* 交易对列表 */
+        .trading-pair {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .trading-pair:hover {
+            background: rgba(252, 213, 53, 0.1);
+        }
+
+        .trading-pair-selected {
+            background: rgba(252, 213, 53, 0.2);
+            border-left: 3px solid #fcd535;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #2b3139;
+            border: 1px solid #3c4248;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #fcd535;
+            box-shadow: 0 0 0 2px rgba(252, 213, 53, 0.2);
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* 统计卡片 */
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fcd535;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #848e9c;
+            font-size: 0.85rem;
+        }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: #1e2329;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid #2b3139;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #848e9c;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #2b3139;
+            color: #ffffff;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .modal-subtitle {
+            color: #848e9c;
+        }
+
+        /* AI聊天界面 */
+        .chat-container {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            background: #1e2329;
+            border-radius: 12px;
+            border: 1px solid #2b3139;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid #2b3139;
+            background: #2b3139;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-message {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            background: #fcd535;
+            color: #000;
+            align-self: flex-end;
+        }
+
+        .chat-message.assistant {
+            background: #2b3139;
+            color: #ffffff;
+            align-self: flex-start;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            border-top: 1px solid #2b3139;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            background: #2b3139;
+            border: 1px solid #3c4248;
+            border-radius: 6px;
+            color: #ffffff;
+        }
+
+        /* 工具类 */
+        .text-center { text-align: center; }
+        .text-yellow { color: #fcd535; }
+        .text-success { color: #02c076; }
+        .text-error { color: #f84960; }
+        .text-secondary { color: #848e9c; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .w-100 { width: 100%; }
+        .d-flex { display: flex; }
+        .align-items-center { align-items: center; }
+        .justify-content-between { justify-content: space-between; }
+        .gap-2 { gap: 1rem; }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2b3139;
+            border-top: 2px solid #fcd535;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-success { background: #02c076; color: white; }
+        .badge-warning { background: #fcd535; color: #000; }
+        .badge-error { background: #f84960; color: white; }
+        .badge-info { background: #0099ff; color: white; }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .trading-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+
+        /* 表格样式 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #2b3139;
+            font-size: 0.85rem;
+        }
+
+        .table th {
+            background: #2b3139;
+            color: #848e9c;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .table td {
+            color: #ffffff;
+        }
+
+        .table tr:hover {
+            background: rgba(252, 213, 53, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="nav-logo">🎓</div>
+                    EduPath
+                </div>
+
+                <div v-if="user" class="nav-menu">
+                    <div class="nav-item" :class="{ active: currentView === 'dashboard' }" @click="setCurrentView('dashboard')">
+                        📊 仪表盘
+                    </div>
+                    <div class="nav-item" :class="{ active: currentView === 'learn' }" @click="setCurrentView('learn')">
+                        📚 学习中心
+                    </div>
+                    <div class="nav-item" :class="{ active: currentView === 'ai-tutor' }" @click="setCurrentView('ai-tutor')">
+                        🤖 AI导师
+                    </div>
+                    <div class="nav-item" :class="{ active: currentView === 'market' }" @click="setCurrentView('market')">
+                        💱 代币交易所
+                    </div>
+                    <div class="nav-item" :class="{ active: currentView === 'wallet' }" @click="setCurrentView('wallet')">
+                        💰 我的钱包
+                    </div>
+                    <div class="nav-item" :class="{ active: currentView === 'contribute' }" @click="setCurrentView('contribute')">
+                        ✏️ 内容贡献
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <div v-if="!user">
+                        <button class="btn btn-outline" @click="showModal('login')">登录</button>
+                        <button class="btn btn-primary" @click="showModal('register')">注册</button>
+                    </div>
+                    <div v-else class="d-flex align-items-center gap-2">
+                        <div style="padding: 0.5rem 1rem; background: #2b3139; border-radius: 6px;">
+                            👤 {{ user.username }}
+                        </div>
+                        <button class="btn btn-secondary" @click="logout">退出</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 欢迎页面 -->
+            <div v-if="currentView === 'welcome'">
+                <div class="text-center" style="padding: 4rem 0;">
+                    <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #fcd535, #f7b500); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        EduPath
+                    </h1>
+                    <p style="font-size: 1.5rem; color: #848e9c; margin-bottom: 3rem;">
+                        知识经济学习平台 - 学习、分享、收益
+                    </p>
+                    <div class="d-flex align-items-center gap-2" style="justify-content: center;">
+                        <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;" @click="showModal('register')">
+                            🚀 立即开始
+                        </button>
+                        <button class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2rem;" @click="showModal('login')">
+                            👋 已有账号
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-3" style="margin-top: 4rem;">
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+                        <h3 style="margin-bottom: 1rem;">智能学习</h3>
+                        <p class="text-secondary">AI驱动的个性化学习路径，让每个人都能找到最适合的学习方式</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
+                        <h3 style="margin-bottom: 1rem;">知识变现</h3>
+                        <p class="text-secondary">分享知识获得代币奖励，将学习成果转化为实际收益</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🌍</div>
+                        <h3 style="margin-bottom: 1rem;">全球社区</h3>
+                        <p class="text-secondary">连接全球学习者，在知识分享中建立深厚的友谊</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 仪表盘 -->
+            <div v-if="currentView === 'dashboard'">
+                <div class="page-header">
+                    <h1 class="page-title">欢迎回来，{{ user?.username }}！</h1>
+                    <button class="btn btn-primary" @click="setCurrentView('ai-tutor')">
+                        🤖 与AI导师对话
+                    </button>
+                </div>
+
+                <div class="grid grid-4 mb-4">
+                    <div class="card stat-card">
+                        <span class="stat-value">442</span>
+                        <span class="stat-label">总收益 (EDP)</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">36%</span>
+                        <span class="stat-label">学习进度</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">17</span>
+                        <span class="stat-label">贡献内容</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">13</span>
+                        <span class="stat-label">连续学习</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card" style="height: 400px;">
+                        <h3 style="margin-bottom: 1rem;">收益趋势</h3>
+                        <canvas id="earningsChart" style="width: 100%; height: 300px;"></canvas>
+                    </div>
+                    <div class="card" style="height: 400px;">
+                        <h3 style="margin-bottom: 1rem;">学习进度</h3>
+                        <canvas id="progressChart" style="width: 100%; height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI导师页面 -->
+            <div v-if="currentView === 'ai-tutor'">
+                <div class="page-header">
+                    <h1 class="page-title">🤖 AI导师</h1>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" @click="clearChat">清除对话</button>
+                        <button class="btn btn-primary" @click="showModal('ai-prompts')">预设问题</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3>💬 与AI导师对话</h3>
+                            <p class="text-secondary">我是您的专属AI学习导师，随时为您解答问题</p>
+                        </div>
+
+                        <div class="chat-messages" ref="chatMessages">
+                            <div v-if="chatMessages.length === 0" class="text-center text-secondary" style="padding: 2rem;">
+                                👋 您好！我是您的AI学习导师。请问有什么可以帮助您的吗？
+                            </div>
+                            <div v-for="(message, index) in chatMessages" :key="index"
+                                 :class="['chat-message', message.role]">
+                                {{ message.content }}
+                            </div>
+                            <div v-if="isAiTyping" class="chat-message assistant">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="spinner"></div>
+                                    AI正在思考...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <input
+                                v-model="chatInput"
+                                @keyup.enter="sendMessage"
+                                class="chat-input"
+                                placeholder="输入您的问题..."
+                                :disabled="isAiTyping"
+                            >
+                            <button class="btn btn-primary" @click="sendMessage" :disabled="isAiTyping || !chatInput.trim()">
+                                发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 币安风格代币交易所 -->
+            <div v-if="currentView === 'market'">
+                <div class="page-header">
+                    <h1 class="page-title">💱 代币交易所</h1>
+                    <div class="d-flex gap-2 align-items-center">
+                        <select v-model="selectedTradingPair" class="form-select" style="width: 150px;">
+                            <option value="EDP/USDT">EDP/USDT</option>
+                            <option value="KCT/USDT">KCT/USDT</option>
+                        </select>
+                        <button class="btn btn-primary">📈 专业交易</button>
+                    </div>
+                </div>
+
+                <!-- 币安风格三栏布局 -->
+                <div class="trading-layout">
+                    <!-- 左侧：市场列表 -->
+                    <div class="trading-sidebar">
+                        <div class="card" style="height: 100%; padding: 0;">
+                            <div style="padding: 1rem; border-bottom: 1px solid #2b3139;">
+                                <h4 style="margin-bottom: 1rem;">市场</h4>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-secondary btn-small">收藏</button>
+                                    <button class="btn btn-primary btn-small">USDT</button>
+                                    <button class="btn btn-secondary btn-small">BTC</button>
+                                </div>
+                            </div>
+                            <div style="overflow-y: auto;">
+                                <table style="width: 100%; font-size: 0.8rem;">
+                                    <thead>
+                                        <tr style="background: #2b3139;">
+                                            <th style="padding: 0.5rem; text-align: left; font-size: 0.7rem; color: #848e9c;">交易对</th>
+                                            <th style="padding: 0.5rem; text-align: right; font-size: 0.7rem; color: #848e9c;">价格</th>
+                                            <th style="padding: 0.5rem; text-align: right; font-size: 0.7rem; color: #848e9c;">涨跌幅</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="pair in tradingPairs" :key="pair.symbol"
+                                            @click="selectedTradingPair = pair.symbol"
+                                            :class="selectedTradingPair === pair.symbol ? 'trading-pair-selected' : 'trading-pair'">
+                                            <td style="padding: 0.5rem;">
+                                                <div>
+                                                    <strong style="color: #ffffff;">{{ pair.base }}</strong>
+                                                    <span style="color: #848e9c; font-size: 0.7rem;">/{{ pair.quote }}</span>
+                                                </div>
+                                                <div style="font-size: 0.65rem; color: #848e9c;">{{ pair.volume24h }}</div>
+                                            </td>
+                                            <td style="padding: 0.5rem; text-align: right;">
+                                                <div style="color: #ffffff; font-weight: 600;">${{ pair.price.toFixed(4) }}</div>
+                                            </td>
+                                            <td style="padding: 0.5rem; text-align: right;">
+                                                <span :class="pair.change >= 0 ? 'text-success' : 'text-error'" style="font-weight: 600;">
+                                                    {{ pair.change >= 0 ? '+' : '' }}{{ pair.change.toFixed(2) }}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 中央：K线图和交易数据 -->
+                    <div class="trading-main">
+                        <!-- 代币信息栏 -->
+                        <div class="token-info-bar">
+                            <div class="d-flex align-items-center gap-4">
+                                <div>
+                                    <h3 style="margin: 0; color: #ffffff;">{{ getCurrentToken().base }}/{{ getCurrentToken().quote }}</h3>
+                                    <div style="font-size: 0.8rem; color: #848e9c;">{{ getCurrentToken().name }}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.8rem; font-weight: 700; color: #ffffff;">${{ getCurrentToken().price.toFixed(4) }}</div>
+                                    <div :class="getCurrentToken().change >= 0 ? 'text-success' : 'text-error'" style="font-size: 0.9rem; font-weight: 600;">
+                                        {{ getCurrentToken().change >= 0 ? '+' : '' }}{{ getCurrentToken().change.toFixed(2) }}% (24h)
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-4" style="font-size: 0.85rem;">
+                                    <div>
+                                        <div style="color: #848e9c;">24h最高</div>
+                                        <div style="color: #02c076; font-weight: 600;">${{ getCurrentToken().high24h.toFixed(4) }}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #848e9c;">24h最低</div>
+                                        <div style="color: #f84960; font-weight: 600;">${{ getCurrentToken().low24h.toFixed(4) }}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #848e9c;">24h成交量</div>
+                                        <div style="color: #ffffff; font-weight: 600;">{{ getCurrentToken().volume24h }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- K线图区域 -->
+                        <div class="chart-section">
+                            <div class="chart-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <button v-for="timeframe in timeframes" :key="timeframe"
+                                            @click="selectedTimeframe = timeframe"
+                                            :class="selectedTimeframe === timeframe ? 'btn btn-primary btn-small' : 'btn btn-secondary btn-small'">
+                                        {{ timeframe }}
+                                    </button>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-secondary btn-small">📊 技术指标</button>
+                                    <button class="btn btn-secondary btn-small">🔧 设置</button>
+                                </div>
+                            </div>
+                            <div class="kline-chart-container">
+                                <canvas id="klineChart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 学习活动对价格影响 -->
+                        <div class="activity-impact-panel">
+                            <h4 style="margin-bottom: 1rem; color: #fcd535; display: flex; align-items: center; gap: 0.5rem;">
+                                📚 学习活动实时价格影响
+                            </h4>
+                            <div class="grid grid-3">
+                                <div style="background: #2b3139; padding: 1rem; border-radius: 8px; border-left: 4px solid #02c076;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-size: 0.8rem; color: #848e9c;">新增学习者</div>
+                                            <div style="font-size: 1.4rem; font-weight: 700; color: #02c076;">+{{ activityData.newLearners }}</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 0.75rem; color: #02c076;">价格影响</div>
+                                            <div style="font-size: 1rem; font-weight: 600; color: #02c076;">+0.23%</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: #848e9c; margin-top: 0.5rem;">
+                                        💡 新用户购买代币用于学习，推高价格
+                                    </div>
+                                </div>
+                                <div style="background: #2b3139; padding: 1rem; border-radius: 8px; border-left: 4px solid #fcd535;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-size: 0.8rem; color: #848e9c;">优质内容贡献</div>
+                                            <div style="font-size: 1.4rem; font-weight: 700; color: #fcd535;">+{{ activityData.contributions }}</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 0.75rem; color: #fcd535;">价格影响</div>
+                                            <div style="font-size: 1rem; font-weight: 600; color: #fcd535;">+0.08%</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: #848e9c; margin-top: 0.5rem;">
+                                        ✏️ 内容创作者获得奖励，增加流通供应
+                                    </div>
+                                </div>
+                                <div style="background: #2b3139; padding: 1rem; border-radius: 8px; border-left: 4px solid #0099ff;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-size: 0.8rem; color: #848e9c;">课程完成奖励</div>
+                                            <div style="font-size: 1.4rem; font-weight: 700; color: #0099ff;">+{{ activityData.completions }}</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 0.75rem; color: #0099ff;">价格影响</div>
+                                            <div style="font-size: 1rem; font-weight: 600; color: #0099ff;">+0.15%</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: #848e9c; margin-top: 0.5rem;">
+                                        🎓 学习成就触发代币奖励发放机制
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：订单簿和快速交易 -->
+                    <div class="trading-sidebar">
+                        <!-- 订单簿 -->
+                        <div class="card" style="padding: 0; flex: 1;">
+                            <div style="padding: 1rem; border-bottom: 1px solid #2b3139;">
+                                <h4>订单簿</h4>
+                            </div>
+                            <div class="orderbook">
+                                <!-- 表头 -->
+                                <div class="orderbook-header">
+                                    <span>价格(USDT)</span>
+                                    <span style="text-align: right;">数量({{ getCurrentToken().base }})</span>
+                                </div>
+
+                                <!-- 卖单 -->
+                                <div>
+                                    <div v-for="(ask, index) in orderBook.asks.slice(0, 6)" :key="'ask-' + index"
+                                         class="orderbook-row" @click="setTradePrice(ask.price)">
+                                        <span class="text-error" style="font-weight: 600;">${{ ask.price.toFixed(4) }}</span>
+                                        <span class="text-secondary" style="text-align: right;">{{ ask.amount.toFixed(2) }}</span>
+                                        <div class="orderbook-bar orderbook-bar-sell" :style="{ width: (ask.amount / maxOrderAmount * 100) + '%' }"></div>
+                                    </div>
+                                </div>
+
+                                <!-- 最新价格 -->
+                                <div class="orderbook-spread">
+                                    <div :class="getCurrentToken().change >= 0 ? 'text-success' : 'text-error'" style="font-weight: 700; font-size: 1rem;">
+                                        ${{ getCurrentToken().price.toFixed(4) }}
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: #848e9c;">最新成交价</div>
+                                </div>
+
+                                <!-- 买单 -->
+                                <div>
+                                    <div v-for="(bid, index) in orderBook.bids.slice(0, 6)" :key="'bid-' + index"
+                                         class="orderbook-row" @click="setTradePrice(bid.price)">
+                                        <span class="text-success" style="font-weight: 600;">${{ bid.price.toFixed(4) }}</span>
+                                        <span class="text-secondary" style="text-align: right;">{{ bid.amount.toFixed(2) }}</span>
+                                        <div class="orderbook-bar orderbook-bar-buy" :style="{ width: (bid.amount / maxOrderAmount * 100) + '%' }"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 快速交易 -->
+                        <div class="card">
+                            <div class="d-flex mb-3" style="border-radius: 6px; overflow: hidden;">
+                                <button @click="tradeMode = 'buy'"
+                                        :class="tradeMode === 'buy' ? 'btn btn-success' : 'btn btn-secondary'"
+                                        style="flex: 1; border-radius: 0;">
+                                    买入 {{ getCurrentToken().base }}
+                                </button>
+                                <button @click="tradeMode = 'sell'"
+                                        :class="tradeMode === 'sell' ? 'btn btn-danger' : 'btn btn-secondary'"
+                                        style="flex: 1; border-radius: 0;">
+                                    卖出 {{ getCurrentToken().base }}
+                                </button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">价格 (USDT)</label>
+                                <input v-model="tradeForm.price" type="number" step="0.0001" class="form-input" placeholder="0.0000">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">数量 ({{ getCurrentToken().base }})</label>
+                                <input v-model="tradeForm.amount" type="number" step="0.01" class="form-input" placeholder="0.00">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">总额 (USDT)</label>
+                                <input :value="(tradeForm.price * tradeForm.amount || 0).toFixed(2)"
+                                       readonly class="form-input"
+                                       style="background: #3c4248; color: #848e9c;">
+                            </div>
+
+                            <div class="d-flex gap-1 mb-3">
+                                <button v-for="percent in [25, 50, 75, 100]" :key="percent"
+                                        @click="setTradePercent(percent)"
+                                        class="btn btn-secondary"
+                                        style="flex: 1; padding: 0.4rem; font-size: 0.75rem;">
+                                    {{ percent }}%
+                                </button>
+                            </div>
+
+                            <button @click="submitTrade"
+                                    :class="tradeMode === 'buy' ? 'btn btn-success w-100' : 'btn btn-danger w-100'"
+                                    style="font-weight: 600;">
+                                {{ tradeMode === 'buy' ? '买入' : '卖出' }} {{ getCurrentToken().base }}
+                            </button>
+
+                            <div style="margin-top: 1rem; padding: 0.75rem; background: #2b3139; border-radius: 6px; font-size: 0.8rem;">
+                                <div class="d-flex justify-content-between">
+                                    <span style="color: #848e9c;">可用余额:</span>
+                                    <span style="color: #ffffff;">1,234.56 USDT</span>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <span style="color: #848e9c;">预计手续费:</span>
+                                    <span style="color: #fcd535;">0.1%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近成交记录 -->
+                <div class="card mt-3">
+                    <h4 style="margin-bottom: 1rem;">📊 最近成交 - 学习活动驱动的交易</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>价格(USDT)</th>
+                                <th>数量({{ getCurrentToken().base }})</th>
+                                <th>方向</th>
+                                <th>触发活动</th>
+                                <th>价格影响</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="trade in recentTrades.slice(0, 8)" :key="trade.id">
+                                <td style="color: #848e9c; font-family: monospace;">{{ formatTradeTime(trade.timestamp) }}</td>
+                                <td style="color: #ffffff; font-weight: 600; font-family: monospace;">${{ trade.price.toFixed(4) }}</td>
+                                <td style="color: #ffffff; font-family: monospace;">{{ trade.amount.toFixed(2) }}</td>
+                                <td>
+                                    <span :class="trade.side === 'buy' ? 'text-success' : 'text-error'" style="font-weight: 600;">
+                                        {{ trade.side === 'buy' ? '🟢 买入' : '🔴 卖出' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" :class="getActivityBadgeColor(trade.trigger)">
+                                        {{ getActivityText(trade.trigger) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span :class="trade.side === 'buy' ? 'text-success' : 'text-error'" style="font-weight: 600;">
+                                        {{ trade.side === 'buy' ? '+' : '-' }}{{ (Math.random() * 0.1).toFixed(3) }}%
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 学习中心 -->
+            <div v-if="currentView === 'learn'">
+                <div class="page-header">
+                    <h1 class="page-title">📚 学习中心</h1>
+                    <div class="d-flex gap-2">
+                        <input v-model="searchQuery" placeholder="搜索知识胶囊..." class="form-input" style="width: 300px;">
+                        <select v-model="selectedCategory" class="form-select" style="width: 150px;">
+                            <option value="">所有分类</option>
+                            <option value="programming">💻 编程开发</option>
+                            <option value="design">🎨 设计创意</option>
+                            <option value="business">📊 商业管理</option>
+                            <option value="language">🗣️ 语言学习</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div v-for="capsule in filteredCapsules" :key="capsule.id"
+                         class="card" @click="viewCapsule(capsule)" style="cursor: pointer; transition: all 0.3s ease;">
+                        <img :src="capsule.image" :alt="capsule.title" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+                        <h3 style="margin-bottom: 0.5rem; color: #ffffff;">{{ capsule.title }}</h3>
+                        <p style="color: #848e9c; font-size: 0.9rem; margin-bottom: 1rem; height: 60px; overflow: hidden;">{{ capsule.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span style="font-weight: 600; color: #fcd535;">{{ capsule.price }} EDP</span>
+                            <span class="badge badge-success">⭐ {{ capsule.rating }}</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #848e9c;">
+                            👤 {{ capsule.students }} 学员 • ⏱️ {{ capsule.duration }}分钟
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的钱包 -->
+            <div v-if="currentView === 'wallet'">
+                <div class="page-header">
+                    <h1 class="page-title">💰 我的钱包</h1>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary">转账</button>
+                        <button class="btn btn-secondary">收款</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-2 mb-4">
+                    <div class="card">
+                        <h3 class="mb-3">代币余额</h3>
+                        <div v-for="balance in walletBalances" :key="balance.symbol" class="mb-3">
+                            <div class="d-flex align-items-center justify-content-between" style="padding: 1rem; background: #2b3139; border-radius: 8px;">
+                                <div>
+                                    <strong>{{ balance.symbol }}</strong><br>
+                                    <small class="text-secondary">{{ balance.name }}</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">{{ balance.amount.toFixed(2) }}</div>
+                                    <div class="text-secondary">${{ (balance.amount * balance.price).toFixed(2) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="mb-3">最近交易</h3>
+                        <div v-for="tx in recentTransactions" :key="tx.id" class="mb-2">
+                            <div class="d-flex align-items-center justify-content-between" style="padding: 0.75rem; background: #2b3139; border-radius: 8px;">
+                                <div>
+                                    <span :class="tx.type === 'receive' ? 'text-success' : 'text-secondary'">
+                                        {{ tx.type === 'receive' ? '↓ 接收' : '↑ 发送' }}
+                                    </span><br>
+                                    <small class="text-secondary">{{ formatTime(tx.timestamp) }}</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div :class="tx.type === 'receive' ? 'text-success' : 'text-secondary'">
+                                        {{ tx.type === 'receive' ? '+' : '-' }}{{ tx.amount }} {{ tx.symbol }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容贡献 -->
+            <div v-if="currentView === 'contribute'">
+                <div class="page-header">
+                    <h1 class="page-title">✏️ 内容贡献</h1>
+                    <button class="btn btn-primary">📝 提交内容</button>
+                </div>
+
+                <div class="grid grid-4 mb-4">
+                    <div class="card stat-card">
+                        <span class="stat-value">156</span>
+                        <span class="stat-label">总提交</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">142</span>
+                        <span class="stat-label">已通过</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">1,240</span>
+                        <span class="stat-label">总收益 (EDP)</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-value">4.8</span>
+                        <span class="stat-label">平均评分</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="mb-3">我的提交</h3>
+                    <div class="text-center text-secondary" style="padding: 2rem;">
+                        📝 开始分享您的知识，获得代币奖励！
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 模态框 -->
+        <!-- 登录模态框 -->
+        <div v-if="modals.login" class="modal" @click.self="closeModal('login')">
+            <div class="modal-content">
+                <button class="modal-close" @click="closeModal('login')">&times;</button>
+                <div class="modal-header">
+                    <h2 class="modal-title">登录账号</h2>
+                    <p class="modal-subtitle">欢迎回到EduPath</p>
+                </div>
+
+                <form @submit.prevent="login">
+                    <div class="form-group">
+                        <label class="form-label">用户名</label>
+                        <input v-model="loginForm.username" type="text" class="form-input" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <input v-model="loginForm.password" type="password" class="form-input" placeholder="请输入密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
+                        <span v-if="isLoading" class="d-flex align-items-center gap-2" style="justify-content: center;">
+                            <div class="spinner"></div>
+                            登录中...
+                        </span>
+                        <span v-else>登录</span>
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p class="text-secondary">
+                        还没有账号？
+                        <a href="#" @click="closeModal('login'); showModal('register')" class="text-yellow">立即注册</a>
+                    </p>
+                </div>
+
+                <div class="mt-3" style="padding: 1rem; background: #2b3139; border-radius: 8px; font-size: 0.9rem;">
+                    <strong>测试账号：</strong><br>
+                    用户名：admin<br>
+                    密码：admin123
+                </div>
+            </div>
+        </div>
+
+        <!-- 注册模态框 -->
+        <div v-if="modals.register" class="modal" @click.self="closeModal('register')">
+            <div class="modal-content">
+                <button class="modal-close" @click="closeModal('register')">&times;</button>
+                <div class="modal-header">
+                    <h2 class="modal-title">创建账号</h2>
+                    <p class="modal-subtitle">加入EduPath学习社区</p>
+                </div>
+
+                <form @submit.prevent="register">
+                    <div class="form-group">
+                        <label class="form-label">用户名</label>
+                        <input v-model="registerForm.username" type="text" class="form-input" placeholder="3-20个字符" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">邮箱</label>
+                        <input v-model="registerForm.email" type="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <input v-model="registerForm.password" type="password" class="form-input" placeholder="至少6位" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">确认密码</label>
+                        <input v-model="registerForm.confirmPassword" type="password" class="form-input" placeholder="再次输入密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
+                        <span v-if="isLoading" class="d-flex align-items-center gap-2" style="justify-content: center;">
+                            <div class="spinner"></div>
+                            注册中...
+                        </span>
+                        <span v-else>注册</span>
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p class="text-secondary">
+                        已有账号？
+                        <a href="#" @click="closeModal('register'); showModal('login')" class="text-yellow">立即登录</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI预设问题模态框 -->
+        <div v-if="modals['ai-prompts']" class="modal" @click.self="closeModal('ai-prompts')">
+            <div class="modal-content">
+                <button class="modal-close" @click="closeModal('ai-prompts')">&times;</button>
+                <div class="modal-header">
+                    <h2 class="modal-title">🤖 预设问题</h2>
+                    <p class="modal-subtitle">选择一个问题开始对话</p>
+                </div>
+
+                <div class="grid" style="gap: 0.75rem;">
+                    <button v-for="prompt in aiPrompts" :key="prompt.id"
+                            class="btn btn-secondary"
+                            @click="usePrompt(prompt.text)"
+                            style="padding: 1rem; white-space: pre-wrap; text-align: left;">
+                        {{ prompt.text }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentView: 'welcome',
+                    user: null,
+                    isLoading: false,
+                    modals: {},
+
+                    // 表单数据
+                    loginForm: { username: '', password: '' },
+                    registerForm: { username: '', email: '', password: '', confirmPassword: '' },
+
+                    // 搜索和过滤
+                    searchQuery: '',
+                    selectedCategory: '',
+
+                    // AI聊天
+                    chatMessages: [],
+                    chatInput: '',
+                    isAiTyping: false,
+
+                    // 交易相关
+                    selectedTradingPair: 'EDP/USDT',
+                    selectedTimeframe: '1h',
+                    tradeMode: 'buy',
+                    tradeForm: { price: 1.2534, amount: 100 },
+
+                    // 交易对数据
+                    tradingPairs: [
+                        {
+                            symbol: 'EDP/USDT',
+                            base: 'EDP',
+                            quote: 'USDT',
+                            name: 'EduPath Token',
+                            price: 1.2534,
+                            change: 5.67,
+                            high24h: 1.2890,
+                            low24h: 1.1820,
+                            volume24h: '2.3M'
+                        },
+                        {
+                            symbol: 'KCT/USDT',
+                            base: 'KCT',
+                            quote: 'USDT',
+                            name: 'Knowledge Contribution Token',
+                            price: 0.8456,
+                            change: -2.34,
+                            high24h: 0.8890,
+                            low24h: 0.8200,
+                            volume24h: '1.8M'
+                        }
+                    ],
+
+                    timeframes: ['1m', '5m', '15m', '1h', '4h', '1d', '1w'],
+
+                    // 订单簿数据
+                    orderBook: {
+                        asks: [
+                            { price: 1.2580, amount: 150.25 },
+                            { price: 1.2575, amount: 89.50 },
+                            { price: 1.2570, amount: 205.75 },
+                            { price: 1.2565, amount: 95.30 },
+                            { price: 1.2560, amount: 180.40 },
+                            { price: 1.2555, amount: 120.80 }
+                        ],
+                        bids: [
+                            { price: 1.2530, amount: 140.20 },
+                            { price: 1.2525, amount: 98.75 },
+                            { price: 1.2520, amount: 185.30 },
+                            { price: 1.2515, amount: 110.45 },
+                            { price: 1.2510, amount: 200.60 },
+                            { price: 1.2505, amount: 85.25 }
+                        ]
+                    },
+
+                    // 学习活动数据
+                    activityData: {
+                        newLearners: 156,
+                        contributions: 23,
+                        completions: 89
+                    },
+
+                    // 最近成交
+                    recentTrades: [
+                        { id: 1, timestamp: new Date(Date.now() - 2 * 60 * 1000), price: 1.2534, amount: 50.25, side: 'buy', trigger: 'learning' },
+                        { id: 2, timestamp: new Date(Date.now() - 5 * 60 * 1000), price: 1.2530, amount: 75.80, side: 'sell', trigger: 'contribution' },
+                        { id: 3, timestamp: new Date(Date.now() - 8 * 60 * 1000), price: 1.2540, amount: 100.50, side: 'buy', trigger: 'completion' },
+                        { id: 4, timestamp: new Date(Date.now() - 12 * 60 * 1000), price: 1.2525, amount: 25.30, side: 'sell', trigger: 'normal' },
+                        { id: 5, timestamp: new Date(Date.now() - 15 * 60 * 1000), price: 1.2545, amount: 150.75, side: 'buy', trigger: 'learning' },
+                        { id: 6, timestamp: new Date(Date.now() - 20 * 60 * 1000), price: 1.2520, amount: 89.40, side: 'sell', trigger: 'normal' }
+                    ],
+
+                    // 知识胶囊数据
+                    capsules: [
+                        {
+                            id: 1,
+                            title: 'Vue.js 3完整教程',
+                            description: '从零开始学习Vue.js 3，包含Composition API、响应式原理等核心概念',
+                            price: 50,
+                            rating: 4.8,
+                            students: 1200,
+                            duration: 120,
+                            category: 'programming',
+                            image: 'https://picsum.photos/400/300?random=1'
+                        },
+                        {
+                            id: 2,
+                            title: 'Python数据分析入门',
+                            description: '使用Python进行数据分析，掌握pandas、numpy等核心库的使用',
+                            price: 75,
+                            rating: 4.6,
+                            students: 890,
+                            duration: 180,
+                            category: 'programming',
+                            image: 'https://picsum.photos/400/300?random=2'
+                        },
+                        {
+                            id: 3,
+                            title: 'UI/UX设计原理',
+                            description: '学习现代UI/UX设计原理，掌握用户体验设计的核心思维',
+                            price: 60,
+                            rating: 4.9,
+                            students: 650,
+                            duration: 90,
+                            category: 'design',
+                            image: 'https://picsum.photos/400/300?random=3'
+                        }
+                    ],
+
+                    // 钱包数据
+                    walletBalances: [
+                        { symbol: 'EDP', name: 'EduPath Token', amount: 1250.75, price: 1.25 },
+                        { symbol: 'KCT', name: 'Knowledge Token', amount: 3420.50, price: 0.85 }
+                    ],
+
+                    recentTransactions: [
+                        { id: 1, type: 'receive', amount: 50, symbol: 'EDP', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+                        { id: 2, type: 'send', amount: 25, symbol: 'KCT', timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000) },
+                        { id: 3, type: 'receive', amount: 100, symbol: 'EDP', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+                    ],
+
+                    // AI预设问题
+                    aiPrompts: [
+                        { id: 1, text: '请帮我制定一个学习计划，我想在3个月内掌握前端开发' },
+                        { id: 2, text: '解释一下什么是区块链技术，它有什么应用场景？' },
+                        { id: 3, text: '我是编程初学者，应该选择哪种编程语言入门？' },
+                        { id: 4, text: '如何提高学习效率？有什么好的学习方法推荐？' },
+                        { id: 5, text: '请介绍一下人工智能在教育领域的应用' },
+                        { id: 6, text: '我想转行做数据分析师，需要学习哪些技能？' }
+                    ]
+                };
+            },
+
+            computed: {
+                filteredCapsules() {
+                    let result = this.capsules;
+
+                    if (this.searchQuery) {
+                        result = result.filter(capsule =>
+                            capsule.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            capsule.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    }
+
+                    if (this.selectedCategory) {
+                        result = result.filter(capsule => capsule.category === this.selectedCategory);
+                    }
+
+                    return result;
+                },
+
+                maxOrderAmount() {
+                    const allAmounts = [...this.orderBook.asks, ...this.orderBook.bids].map(order => order.amount);
+                    return Math.max(...allAmounts);
+                }
+            },
+
+            methods: {
+                setCurrentView(view) {
+                    this.currentView = view;
+
+                    if (view === 'dashboard') {
+                        this.$nextTick(() => this.initCharts());
+                    } else if (view === 'market') {
+                        this.$nextTick(() => this.initKlineChart());
+                    }
+                },
+
+                showModal(name) {
+                    this.modals[name] = true;
+                },
+
+                closeModal(name) {
+                    this.modals[name] = false;
+                },
+
+                async login() {
+                    if (!this.loginForm.username || !this.loginForm.password) {
+                        this.showToast('请填写完整的登录信息', 'error');
+                        return;
+                    }
+
+                    this.isLoading = true;
+
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        if (this.loginForm.username === 'admin' && this.loginForm.password === 'admin123') {
+                            this.user = {
+                                id: 1,
+                                username: this.loginForm.username,
+                                email: 'admin@edupath.com'
+                            };
+
+                            this.showToast('登录成功！', 'success');
+                            this.closeModal('login');
+                            this.setCurrentView('dashboard');
+                            this.loginForm = { username: '', password: '' };
+                        } else {
+                            this.showToast('用户名或密码错误', 'error');
+                        }
+                    } catch (error) {
+                        this.showToast('登录失败，请重试', 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async register() {
+                    if (!this.registerForm.username || !this.registerForm.email ||
+                        !this.registerForm.password || !this.registerForm.confirmPassword) {
+                        this.showToast('请填写完整的注册信息', 'error');
+                        return;
+                    }
+
+                    if (this.registerForm.password !== this.registerForm.confirmPassword) {
+                        this.showToast('两次输入的密码不一致', 'error');
+                        return;
+                    }
+
+                    this.isLoading = true;
+
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        this.showToast('注册成功！请登录', 'success');
+                        this.closeModal('register');
+                        this.showModal('login');
+                        this.registerForm = { username: '', email: '', password: '', confirmPassword: '' };
+                    } catch (error) {
+                        this.showToast('注册失败，请重试', 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                logout() {
+                    this.user = null;
+                    this.currentView = 'welcome';
+                    this.showToast('已安全退出', 'info');
+                },
+
+                // AI聊天功能
+                async sendMessage() {
+                    if (!this.chatInput.trim() || this.isAiTyping) return;
+
+                    const userMessage = this.chatInput.trim();
+                    this.chatInput = '';
+
+                    this.chatMessages.push({ role: 'user', content: userMessage });
+                    this.$nextTick(() => this.scrollChatToBottom());
+
+                    this.isAiTyping = true;
+
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+
+                        const aiResponse = this.generateAiResponse(userMessage);
+                        this.chatMessages.push({ role: 'assistant', content: aiResponse });
+
+                        this.$nextTick(() => this.scrollChatToBottom());
+                    } catch (error) {
+                        this.showToast('AI回复失败，请重试', 'error');
+                    } finally {
+                        this.isAiTyping = false;
+                    }
+                },
+
+                generateAiResponse(userMessage) {
+                    if (userMessage.toLowerCase().includes('学习计划')) {
+                        return '制定学习计划很重要！我建议您：1. 设定明确的学习目标 2. 评估现有技能水平 3. 分解大目标为小步骤 4. 设置合理的时间线 5. 定期回顾和调整计划。需要我为您制定具体的学习路径吗？';
+                    } else if (userMessage.toLowerCase().includes('编程')) {
+                        return '编程学习是一个循序渐进的过程。建议从以下步骤开始：1. 选择适合的编程语言（如Python或JavaScript） 2. 掌握基础语法和概念 3. 通过项目实践加深理解 4. 学习数据结构和算法 5. 参与开源项目。记住，实践是最好的老师！';
+                    } else if (userMessage.toLowerCase().includes('区块链')) {
+                        return '区块链是一种分布式账本技术，具有去中心化、不可篡改、透明等特点。主要应用包括：1. 加密货币 2. 智能合约 3. 供应链管理 4. 数字身份认证 5. 去中心化金融(DeFi)。您想了解哪个方面的详细信息？';
+                    }
+
+                    return '这是一个很好的问题！让我为您详细解答。根据我的知识，我建议您可以从以下几个方面入手来解决这个问题。如果您需要更具体的建议，请告诉我更多细节。';
+                },
+
+                usePrompt(promptText) {
+                    this.chatInput = promptText;
+                    this.closeModal('ai-prompts');
+                    this.sendMessage();
+                },
+
+                clearChat() {
+                    this.chatMessages = [];
+                    this.showToast('对话已清除', 'info');
+                },
+
+                scrollChatToBottom() {
+                    const chatMessages = this.$refs.chatMessages;
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                },
+
+                // 交易相关方法
+                getCurrentToken() {
+                    return this.tradingPairs.find(pair => pair.symbol === this.selectedTradingPair) || this.tradingPairs[0];
+                },
+
+                setTradePrice(price) {
+                    this.tradeForm.price = price;
+                },
+
+                setTradePercent(percent) {
+                    const maxAmount = 1000;
+                    this.tradeForm.amount = (maxAmount * percent / 100).toFixed(2);
+                },
+
+                submitTrade() {
+                    if (!this.tradeForm.price || !this.tradeForm.amount) {
+                        this.showToast('请填写完整的交易信息', 'error');
+                        return;
+                    }
+
+                    const total = (this.tradeForm.price * this.tradeForm.amount).toFixed(2);
+                    this.showToast(`${this.tradeMode === 'buy' ? '买入' : '卖出'}订单已提交！总额: $${total}`, 'success');
+
+                    this.recentTrades.unshift({
+                        id: Date.now(),
+                        timestamp: new Date(),
+                        price: parseFloat(this.tradeForm.price),
+                        amount: parseFloat(this.tradeForm.amount),
+                        side: this.tradeMode,
+                        trigger: 'normal'
+                    });
+
+                    if (this.recentTrades.length > 20) {
+                        this.recentTrades = this.recentTrades.slice(0, 20);
+                    }
+                },
+
+                formatTradeTime(timestamp) {
+                    const now = new Date();
+                    const diff = now - timestamp;
+                    const minutes = Math.floor(diff / (1000 * 60));
+
+                    if (minutes < 1) return '刚刚';
+                    if (minutes < 60) return `${minutes}分钟前`;
+                    return timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                },
+
+                getActivityText(trigger) {
+                    switch (trigger) {
+                        case 'learning': return '📚 新学习者';
+                        case 'contribution': return '✏️ 内容贡献';
+                        case 'completion': return '🎓 课程完成';
+                        default: return '💱 正常交易';
+                    }
+                },
+
+                getActivityBadgeColor(trigger) {
+                    switch (trigger) {
+                        case 'learning': return 'badge-info';
+                        case 'contribution': return 'badge-warning';
+                        case 'completion': return 'badge-success';
+                        default: return 'badge-secondary';
+                    }
+                },
+
+                // 其他功能
+                viewCapsule(capsule) {
+                    this.showToast(`查看《${capsule.title}》`, 'info');
+                },
+
+                formatTime(date) {
+                    const now = new Date();
+                    const diff = now - date;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const days = Math.floor(hours / 24);
+
+                    if (days > 0) return `${days}天前`;
+                    if (hours > 0) return `${hours}小时前`;
+                    return '刚刚';
+                },
+
+                showToast(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    toast.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        color: white;
+                        font-weight: 500;
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease;
+                        max-width: 300px;
+                    `;
+
+                    switch (type) {
+                        case 'success':
+                            toast.style.background = '#02c076';
+                            break;
+                        case 'error':
+                            toast.style.background = '#f84960';
+                            break;
+                        case 'warning':
+                            toast.style.background = '#fcd535';
+                            toast.style.color = '#000';
+                            break;
+                        default:
+                            toast.style.background = '#0099ff';
+                    }
+
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => {
+                            if (document.body.contains(toast)) {
+                                document.body.removeChild(toast);
+                            }
+                        }, 300);
+                    }, 3000);
+                },
+
+                // 初始化图表
+                initCharts() {
+                    this.initEarningsChart();
+                    this.initProgressChart();
+                },
+
+                initEarningsChart() {
+                    const ctx = document.getElementById('earningsChart');
+                    if (!ctx) return;
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                            datasets: [{
+                                label: '收益 (EDP)',
+                                data: [65, 89, 80, 81, 156, 155],
+                                borderColor: '#fcd535',
+                                backgroundColor: 'rgba(252, 213, 53, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { labels: { color: '#848e9c' } }
+                            },
+                            scales: {
+                                y: {
+                                    ticks: { color: '#848e9c' },
+                                    grid: { color: '#2b3139' }
+                                },
+                                x: {
+                                    ticks: { color: '#848e9c' },
+                                    grid: { color: '#2b3139' }
+                                }
+                            }
+                        }
+                    });
+                },
+
+                initProgressChart() {
+                    const ctx = document.getElementById('progressChart');
+                    if (!ctx) return;
+
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['已完成', '进行中', '未开始'],
+                            datasets: [{
+                                data: [65, 25, 10],
+                                backgroundColor: ['#02c076', '#fcd535', '#5e6673']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { color: '#848e9c' }
+                                }
+                            }
+                        }
+                    });
+                },
+
+                // 初始化K线图
+                initKlineChart() {
+                    const ctx = document.getElementById('klineChart');
+                    if (!ctx) return;
+
+                    const klineData = [
+                        { time: '10:00', price: 1.2450 },
+                        { time: '11:00', price: 1.2534 },
+                        { time: '12:00', price: 1.2565 },
+                        { time: '13:00', price: 1.2590 },
+                        { time: '14:00', price: 1.2610 },
+                        { time: '15:00', price: 1.2645 },
+                        { time: '16:00', price: 1.2675 },
+                        { time: '17:00', price: 1.2690 }
+                    ];
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: klineData.map(item => item.time),
+                            datasets: [{
+                                label: 'EDP价格',
+                                data: klineData.map(item => item.price),
+                                borderColor: '#fcd535',
+                                backgroundColor: 'rgba(252, 213, 53, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { labels: { color: '#848e9c' } },
+                                tooltip: {
+                                    backgroundColor: '#1e2329',
+                                    titleColor: '#ffffff',
+                                    bodyColor: '#ffffff',
+                                    borderColor: '#2b3139',
+                                    borderWidth: 1
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        color: '#848e9c',
+                                        callback: function(value) {
+                                            return '$' + value.toFixed(4);
+                                        }
+                                    },
+                                    grid: { color: '#2b3139', drawBorder: false }
+                                },
+                                x: {
+                                    ticks: { color: '#848e9c' },
+                                    grid: { color: '#2b3139', drawBorder: false }
+                                }
+                            }
+                        }
+                    });
+                }
+            },
+
+            mounted() {
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

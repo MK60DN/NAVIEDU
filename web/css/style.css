@@ -1,0 +1,797 @@
+/* EduPath 币安风格主样式文件 */
+
+/* ===== CSS变量定义 ===== */
+:root {
+    /* 币安配色方案 */
+    --binance-yellow: #fcd535;
+    --binance-yellow-dark: #e8c32e;
+    --binance-bg-primary: #0b0e11;
+    --binance-bg-secondary: #1e2329;
+    --binance-bg-tertiary: #2b3139;
+    --binance-text-primary: #ffffff;
+    --binance-text-secondary: #848e9c;
+    --binance-text-muted: #5e6673;
+    --binance-border: #2b3139;
+    --binance-success: #02c076;
+    --binance-error: #f84960;
+    --binance-warning: #fcd535;
+    --binance-info: #0099ff;
+
+    /* 渐变色 */
+    --gradient-primary: linear-gradient(135deg, var(--binance-yellow) 0%, #f7b500 100%);
+    --gradient-bg: linear-gradient(180deg, var(--binance-bg-primary) 0%, var(--binance-bg-secondary) 100%);
+
+    /* 阴影 */
+    --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-large: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    /* 圆角 */
+    --radius-small: 4px;
+    --radius-medium: 8px;
+    --radius-large: 12px;
+
+    /* 字体 */
+    --font-primary: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+/* ===== 基础重置 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 14px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-primary);
+    background: var(--binance-bg-primary);
+    color: var(--binance-text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ===== 导航栏样式 ===== */
+.navbar {
+    background: var(--binance-bg-secondary);
+    border-bottom: 1px solid var(--binance-border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--binance-text-primary);
+    text-decoration: none;
+}
+
+.nav-logo {
+    width: 32px;
+    height: 32px;
+    filter: brightness(0) invert(1);
+}
+
+.nav-title {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 用户导航菜单 */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: var(--binance-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-medium);
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: var(--binance-yellow);
+    background: rgba(252, 213, 53, 0.1);
+}
+
+.nav-menu .icon {
+    font-size: 1.2rem;
+}
+
+/* 导航操作按钮 */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--binance-bg-tertiary);
+    border-radius: var(--radius-medium);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--binance-bg-primary);
+}
+
+/* ===== 按钮样式 ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-medium);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    min-height: 40px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 主要按钮 */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: var(--binance-bg-primary);
+    box-shadow: var(--shadow-small);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* 轮廓按钮 */
+.btn-outline {
+    background: transparent;
+    color: var(--binance-yellow);
+    border: 1px solid var(--binance-yellow);
+}
+
+.btn-outline:hover:not(:disabled) {
+    background: var(--binance-yellow);
+    color: var(--binance-bg-primary);
+}
+
+/* 次要按钮 */
+.btn-secondary {
+    background: var(--binance-bg-tertiary);
+    color: var(--binance-text-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--binance-border);
+}
+
+/* 成功按钮 */
+.btn-success {
+    background: var(--binance-success);
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #01a369;
+}
+
+/* 错误按钮 */
+.btn-danger {
+    background: var(--binance-error);
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #e73c4e;
+}
+
+/* 按钮尺寸 */
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-height: 32px;
+}
+
+.btn-large {
+    padding: 14px 28px;
+    font-size: 1rem;
+    min-height: 48px;
+}
+
+/* ===== 主要内容区域 ===== */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: calc(100vh - 64px);
+}
+
+/* ===== 欢迎页面 ===== */
+.welcome-section {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--gradient-bg);
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+    font-size: 1.25rem;
+    color: var(--binance-text-secondary);
+    margin-bottom: 40px;
+    max-width: 600px;
+    line-height: 1.8;
+}
+
+.welcome-actions {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+    max-width: 1000px;
+}
+
+.feature-card {
+    background: var(--binance-bg-secondary);
+    padding: 40px 30px;
+    border-radius: var(--radius-large);
+    border: 1px solid var(--binance-border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-large);
+    border-color: var(--binance-yellow);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--binance-text-primary);
+}
+
+.feature-description {
+    color: var(--binance-text-secondary);
+    line-height: 1.6;
+}
+
+/* ===== 仪表盘样式 ===== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--binance-bg-secondary);
+    padding: 24px;
+    border-radius: var(--radius-large);
+    border: 1px solid var(--binance-border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--binance-yellow);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: var(--binance-text-secondary);
+    font-size: 0.9rem;
+}
+
+.chart-container {
+    background: var(--binance-bg-secondary);
+    padding: 24px;
+    border-radius: var(--radius-large);
+    border: 1px solid var(--binance-border);
+    height: 400px;
+}
+
+.chart-container h3 {
+    margin-bottom: 20px;
+    color: var(--binance-text-primary);
+}
+
+/* ===== 卡片通用样式 ===== */
+.card {
+    background: var(--binance-bg-secondary);
+    border: 1px solid var(--binance-border);
+    border-radius: var(--radius-large);
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--binance-border);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--binance-text-primary);
+}
+
+.card-content {
+    color: var(--binance-text-secondary);
+}
+
+/* ===== 表单样式 ===== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--binance-text-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--binance-bg-tertiary);
+    border: 1px solid var(--binance-border);
+    border-radius: var(--radius-medium);
+    color: var(--binance-text-primary);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--binance-yellow);
+    box-shadow: 0 0 0 2px rgba(252, 213, 53, 0.2);
+}
+
+.form-input::placeholder {
+    color: var(--binance-text-muted);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23848e9c' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+    appearance: none;
+}
+
+/* ===== 模态框样式 ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--binance-bg-secondary);
+    border-radius: var(--radius-large);
+    padding: 40px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-large);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--binance-text-primary);
+    margin-bottom: 8px;
+}
+
+.modal-subtitle {
+    color: var(--binance-text-secondary);
+    font-size: 0.9rem;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--binance-text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: var(--radius-small);
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    color: var(--binance-text-primary);
+    background: var(--binance-bg-tertiary);
+}
+
+/* ===== 表格样式 ===== */
+.table-container {
+    background: var(--binance-bg-secondary);
+    border-radius: var(--radius-large);
+    border: 1px solid var(--binance-border);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--binance-border);
+}
+
+.table th {
+    background: var(--binance-bg-tertiary);
+    font-weight: 600;
+    color: var(--binance-text-primary);
+    font-size: 0.9rem;
+}
+
+.table td {
+    color: var(--binance-text-secondary);
+}
+
+.table tr:hover {
+    background: var(--binance-bg-tertiary);
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== 提示消息样式 ===== */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: var(--radius-medium);
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+    max-width: 300px;
+    box-shadow: var(--shadow-medium);
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    background: var(--binance-success);
+}
+
+.toast-error {
+    background: var(--binance-error);
+}
+
+.toast-warning {
+    background: var(--binance-warning);
+    color: var(--binance-bg-primary);
+}
+
+.toast-info {
+    background: var(--binance-info);
+}
+
+/* ===== 加载状态 ===== */
+.loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* ===== 徽章样式 ===== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--radius-small);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: rgba(2, 192, 118, 0.2);
+    color: var(--binance-success);
+}
+
+.badge-warning {
+    background: rgba(252, 213, 53, 0.2);
+    color: var(--binance-warning);
+}
+
+.badge-error {
+    background: rgba(248, 73, 96, 0.2);
+    color: var(--binance-error);
+}
+
+.badge-info {
+    background: rgba(0, 153, 255, 0.2);
+    color: var(--binance-info);
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+    html {
+        font-size: 13px;
+    }
+
+    .nav-container {
+        padding: 0 15px;
+    }
+
+    .nav-menu {
+        gap: 1rem;
+    }
+
+    .nav-menu a {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+    }
+
+    .welcome-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .modal-content {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-menu {
+        display: none;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ===== 暗色主题优化 ===== */
+@media (prefers-color-scheme: dark) {
+    /* 已经是暗色主题，无需额外设置 */
+}
+
+/* ===== 滚动条样式 ===== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--binance-bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--binance-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--binance-text-muted);
+}
+
+/* ===== 工具类 ===== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+
+.flex-column { flex-direction: column; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+.text-primary { color: var(--binance-text-primary); }
+.text-secondary { color: var(--binance-text-secondary); }
+.text-muted { color: var(--binance-text-muted); }
+.text-success { color: var(--binance-success); }
+.text-error { color: var(--binance-error); }
+.text-warning { color: var(--binance-warning); }
+.text-yellow { color: var(--binance-yellow); }

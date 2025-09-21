@@ -1,0 +1,929 @@
+<!-- ====== AI导师聊天界面页面 ====== -->
+<!-- web/ai-tutor.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI学习导师 - EduPath</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ai-tutor.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="ai-tutor-app">
+        <!-- 顶部导航栏 -->
+        <nav class="binance-navbar">
+            <div class="nav-container">
+                <div class="nav-left">
+                    <div class="nav-brand">
+                        <img src="assets/logo.svg" alt="EduPath" class="logo">
+                        <span class="brand-text">EduPath</span>
+                    </div>
+                    <div class="nav-divider"></div>
+                    <div class="nav-title">
+                        <span class="ai-icon">🤖</span>
+                        <span class="title-text">AI学习导师</span>
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <div class="user-info" v-if="user">
+                        <div class="token-balance">
+                            <span class="token-label">$PYTHON</span>
+                            <span class="token-amount">{{ user.pythonTokens || 0 }}</span>
+                        </div>
+                        <div class="user-avatar">
+                            {{ user.username.charAt(0).toUpperCase() }}
+                        </div>
+                    </div>
+                    <button @click="goHome" class="nav-btn">
+                        <span>返回首页</span>
+                    </button>
+                    <button @click="logout" class="nav-btn logout-btn">
+                        <span>退出</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <div class="ai-tutor-main">
+            <!-- 左侧聊天面板 -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="header-content">
+                        <h2>🤖 您的专属AI学习导师</h2>
+                        <p>我可以帮您查找知识点、规划学习路径、解答问题、收集知识贡献！</p>
+                        <div class="header-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">{{ chatStats.totalChats }}</span>
+                                <span class="stat-label">对话次数</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ chatStats.learnedTopics }}</span>
+                                <span class="stat-label">已学知识点</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ chatStats.contributions }}</span>
+                                <span class="stat-label">知识贡献</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chat-messages" ref="chatMessages">
+                    <!-- 欢迎消息 -->
+                    <div class="message assistant welcome-message">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-bubble">
+                            <div class="message-content">
+                                <div class="welcome-text">
+                                    <h3>欢迎来到AI学习导师！</h3>
+                                    <p>我是您的专属学习助手"智学"，可以帮助您：</p>
+                                    <ul class="feature-list">
+                                        <li>🔍 <strong>智能搜索</strong> - 查找和解释各种知识点</li>
+                                        <li>🗺️ <strong>路径规划</strong> - 制定个性化学习计划</li>
+                                        <li>💡 <strong>答疑辅导</strong> - 解答学习中的疑问</li>
+                                        <li>📚 <strong>知识贡献</strong> - 帮助完善知识图谱</li>
+                                    </ul>
+                                    <p class="welcome-tip">💡 <strong>小提示：</strong>您可以直接输入问题，或点击下方的快速操作按钮开始！</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 动态消息将在这里显示 -->
+                    <div v-for="(message, index) in messages" :key="index"
+                         :class="['message', message.type]">
+                        <div v-if="message.type === 'user'" class="message-avatar user-avatar">
+                            {{ user.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <div v-else class="message-avatar">🤖</div>
+                        <div class="message-bubble">
+                            <div class="message-content" v-html="formatMessage(message.content)"></div>
+                            <div class="message-time">{{ formatTime(message.timestamp) }}</div>
+                        </div>
+                    </div>
+
+                    <!-- 加载指示器 -->
+                    <div v-if="isLoading" class="message assistant">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-bubble loading-bubble">
+                            <div class="typing-indicator">
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <span class="typing-text">智学正在思考中...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <!-- 快速操作按钮 -->
+                    <div class="quick-actions" v-if="!isInputFocused">
+                        <button @click="sendQuickMessage('我想学习Python基础')" class="quick-btn">
+                            <span class="btn-icon">🐍</span>
+                            <span>Python基础</span>
+                        </button>
+                        <button @click="sendQuickMessage('帮我规划学习路径')" class="quick-btn">
+                            <span class="btn-icon">🗺️</span>
+                            <span>学习路径</span>
+                        </button>
+                        <button @click="sendQuickMessage('解释装饰器的概念')" class="quick-btn">
+                            <span class="btn-icon">💡</span>
+                            <span>概念解释</span>
+                        </button>
+                        <button @click="clearChat" class="quick-btn clear-btn">
+                            <span class="btn-icon">🗑️</span>
+                            <span>清空对话</span>
+                        </button>
+                    </div>
+
+                    <!-- 消息输入框 -->
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <input
+                                type="text"
+                                id="message-input"
+                                ref="messageInput"
+                                v-model="currentMessage"
+                                @keypress="handleKeyPress"
+                                @focus="isInputFocused = true"
+                                @blur="isInputFocused = false"
+                                :disabled="isLoading"
+                                placeholder="输入您的问题或想学习的内容..."
+                                maxlength="1000"
+                            >
+                            <button
+                                @click="sendMessage"
+                                :disabled="!currentMessage.trim() || isLoading"
+                                class="send-btn"
+                            >
+                                <span v-if="!isLoading">发送</span>
+                                <span v-else class="loading-spinner"></span>
+                            </button>
+                        </div>
+                        <div class="input-footer">
+                            <div class="char-count">
+                                {{ currentMessage.length }}/1000
+                            </div>
+                            <div class="input-tips">
+                                💡 试试问我"什么是Python"或"我想学编程"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧信息面板 -->
+            <div class="info-panel">
+                <!-- 知识点展示区域 -->
+                <div v-if="knowledgePoints.length > 0" class="panel-section knowledge-section">
+                    <div class="section-header">
+                        <h3>📚 相关知识点</h3>
+                        <button @click="knowledgePoints = []" class="close-btn">×</button>
+                    </div>
+                    <div class="knowledge-list">
+                        <div
+                            v-for="(point, index) in knowledgePoints"
+                            :key="index"
+                            @click="selectKnowledgePoint(index)"
+                            class="knowledge-card"
+                        >
+                            <div class="card-header">
+                                <h4>{{ point.name }}</h4>
+                                <div class="difficulty-badge" :class="getDifficultyClass(point.difficulty)">
+                                    {{ point.difficulty }}
+                                </div>
+                            </div>
+                            <p class="card-description">{{ point.description }}</p>
+                            <div class="card-meta">
+                                <span class="meta-item">
+                                    <span class="meta-icon">⏱️</span>
+                                    {{ point.estimated_time }}
+                                </span>
+                                <span class="meta-item">
+                                    <span class="meta-icon">🏷️</span>
+                                    {{ point.category }}
+                                </span>
+                            </div>
+                            <div v-if="point.related_topics && point.related_topics.length > 0" class="related-topics">
+                                <span class="related-label">相关：</span>
+                                <span v-for="topic in point.related_topics.slice(0, 3)" :key="topic" class="topic-tag">
+                                    {{ topic }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学习路径展示区域 -->
+                <div v-if="learningPaths.length > 0" class="panel-section path-section">
+                    <div class="section-header">
+                        <h3>🗺️ 推荐学习路径</h3>
+                        <button @click="learningPaths = []" class="close-btn">×</button>
+                    </div>
+                    <div class="path-list">
+                        <div
+                            v-for="(path, pathIndex) in learningPaths"
+                            :key="pathIndex"
+                            class="path-card"
+                        >
+                            <div class="path-header">
+                                <h4>路径 {{ pathIndex + 1 }}</h4>
+                                <div class="path-stats">
+                                    <span class="stat-badge">{{ path.nodes.length }}步</span>
+                                    <span class="stat-badge">{{ path.estimated_total_time }}</span>
+                                    <span class="stat-badge difficulty" :class="getDifficultyClass(path.difficulty_level)">
+                                        {{ path.difficulty_level }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="path-steps">
+                                <div
+                                    v-for="(step, stepIndex) in path.nodes"
+                                    :key="stepIndex"
+                                    @click="startLearningStep(pathIndex, stepIndex)"
+                                    class="step-item"
+                                >
+                                    <div class="step-number">{{ step.step }}</div>
+                                    <div class="step-content">
+                                        <h5>{{ step.name }}</h5>
+                                        <p>{{ step.description }}</p>
+                                        <div class="step-meta">
+                                            <span class="meta-tag">{{ step.difficulty }}</span>
+                                            <span class="meta-tag">{{ step.estimated_time }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学习进度面板 -->
+                <div class="panel-section progress-section">
+                    <div class="section-header">
+                        <h3>📈 学习进度</h3>
+                    </div>
+                    <div class="progress-content">
+                        <div class="progress-item">
+                            <div class="progress-label">当前主题</div>
+                            <div class="progress-value">{{ currentTopic || '暂无' }}</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">今日学习</div>
+                            <div class="progress-value">{{ todayProgress.learned }} / {{ todayProgress.target }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" :style="{ width: (todayProgress.learned / todayProgress.target * 100) + '%' }"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">知识贡献</div>
+                            <div class="progress-value">{{ contributionCount }} 个</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">代币余额</div>
+                            <div class="progress-value token-balance">
+                                <span class="token-symbol">$PYTHON</span>
+                                <span class="token-amount">{{ user.pythonTokens || 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速操作面板 -->
+                <div class="panel-section actions-section">
+                    <div class="section-header">
+                        <h3>⚡ 快速操作</h3>
+                    </div>
+                    <div class="action-buttons">
+                        <button @click="sendQuickMessage('我想系统学习Python')" class="action-btn primary">
+                            <span class="btn-icon">🎯</span>
+                            <span>规划学习路径</span>
+                        </button>
+                        <button @click="sendQuickMessage('推荐一些练习题')" class="action-btn">
+                            <span class="btn-icon">📝</span>
+                            <span>获取练习题</span>
+                        </button>
+                        <button @click="sendQuickMessage('总结今天的学习内容')" class="action-btn">
+                            <span class="btn-icon">📊</span>
+                            <span>学习总结</span>
+                        </button>
+                        <button @click="openContributionModal" class="action-btn secondary">
+                            <span class="btn-icon">💡</span>
+                            <span>贡献知识</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI导师状态 -->
+                <div class="panel-section status-section">
+                    <div class="section-header">
+                        <h3>🤖 AI导师状态</h3>
+                    </div>
+                    <div class="status-content">
+                        <div class="status-item">
+                            <div class="status-indicator online"></div>
+                            <div class="status-info">
+                                <div class="status-label">服务状态</div>
+                                <div class="status-value">在线服务</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-info">
+                                <div class="status-label">响应时间</div>
+                                <div class="status-value">{{ responseTime }}ms</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-info">
+                                <div class="status-label">今日服务</div>
+                                <div class="status-value">{{ todayServices }} 次</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 贡献知识模态框 -->
+        <div v-if="showContributionModal" class="modal-overlay" @click="closeContributionModal">
+            <div class="modal-container" @click.stop>
+                <div class="modal-header">
+                    <h3>💡 贡献知识点</h3>
+                    <button @click="closeContributionModal" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form @submit.prevent="submitContribution">
+                        <div class="form-group">
+                            <label>概念名称 *</label>
+                            <input
+                                type="text"
+                                v-model="contributionForm.name"
+                                placeholder="如：Python装饰器、React Hooks等"
+                                required
+                                maxlength="100"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label>详细描述 *</label>
+                            <textarea
+                                v-model="contributionForm.description"
+                                placeholder="请详细描述这个概念的定义、用途、特点等..."
+                                required
+                                maxlength="1000"
+                                rows="4"
+                            ></textarea>
+                            <div class="char-count">{{ contributionForm.description.length }}/1000</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>难度级别</label>
+                                <select v-model="contributionForm.difficulty">
+                                    <option value="入门">入门</option>
+                                    <option value="初级">初级</option>
+                                    <option value="中级">中级</option>
+                                    <option value="高级">高级</option>
+                                    <option value="专家">专家</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>学习时长</label>
+                                <select v-model="contributionForm.estimated_time">
+                                    <option value="15分钟">15分钟</option>
+                                    <option value="30分钟">30分钟</option>
+                                    <option value="1小时">1小时</option>
+                                    <option value="2小时">2小时</option>
+                                    <option value="半天">半天</option>
+                                    <option value="1天">1天</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>分类标签</label>
+                            <input
+                                type="text"
+                                v-model="contributionForm.category"
+                                placeholder="如：编程语言、算法、框架、工具等"
+                                maxlength="50"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label>前置知识</label>
+                            <input
+                                type="text"
+                                v-model="contributionForm.prerequisites"
+                                placeholder="学习这个概念需要先掌握什么？（可选）"
+                                maxlength="200"
+                            >
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" @click="closeContributionModal" class="btn-cancel">
+                                取消
+                            </button>
+                            <button type="submit" :disabled="isSubmittingContribution" class="btn-submit">
+                                <span v-if="!isSubmittingContribution">提交贡献 (+10 $PYTHON)</span>
+                                <span v-else>提交中...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast通知 -->
+        <div v-if="toast.show" :class="['toast', toast.type]">
+            <div class="toast-content">
+                <span class="toast-icon">{{ getToastIcon(toast.type) }}</span>
+                <span class="toast-message">{{ toast.message }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本引入 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/aiTutor.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // 用户信息
+                    user: null,
+
+                    // 聊天相关
+                    messages: [],
+                    currentMessage: '',
+                    isLoading: false,
+                    isInputFocused: false,
+
+                    // 知识点和路径
+                    knowledgePoints: [],
+                    learningPaths: [],
+
+                    // 模态框
+                    showContributionModal: false,
+                    isSubmittingContribution: false,
+
+                    // 贡献表单
+                    contributionForm: {
+                        name: '',
+                        description: '',
+                        difficulty: '中级',
+                        category: '编程',
+                        estimated_time: '30分钟',
+                        prerequisites: ''
+                    },
+
+                    // 统计数据
+                    chatStats: {
+                        totalChats: 0,
+                        learnedTopics: 0,
+                        contributions: 0
+                    },
+
+                    // 进度数据
+                    currentTopic: '',
+                    todayProgress: {
+                        learned: 0,
+                        target: 5
+                    },
+                    contributionCount: 0,
+
+                    // 状态监控
+                    responseTime: 0,
+                    todayServices: 0,
+
+                    // Toast通知
+                    toast: {
+                        show: false,
+                        type: 'info',
+                        message: ''
+                    }
+                }
+            },
+
+            mounted() {
+                this.initializeApp();
+                this.loadUserData();
+                this.loadChatHistory();
+                this.focusInput();
+            },
+
+            methods: {
+                // 初始化应用
+                async initializeApp() {
+                    // 检查登录状态
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        this.showToast('请先登录！', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                        return;
+                    }
+
+                    try {
+                        // 获取用户信息
+                        const userResponse = await apiRequest('/auth/me');
+                        if (userResponse.success) {
+                            this.user = userResponse.data;
+                            this.updateChatStats();
+                        }
+                    } catch (error) {
+                        console.error('获取用户信息失败:', error);
+                        this.showToast('获取用户信息失败', 'error');
+                    }
+                },
+
+                // 加载用户数据
+                loadUserData() {
+                    // 从localStorage加载聊天统计
+                    const savedStats = localStorage.getItem('chatStats');
+                    if (savedStats) {
+                        this.chatStats = { ...this.chatStats, ...JSON.parse(savedStats) };
+                    }
+
+                    // 加载今日进度
+                    const today = new Date().toDateString();
+                    const todayProgress = localStorage.getItem(`progress_${today}`);
+                    if (todayProgress) {
+                        this.todayProgress = { ...this.todayProgress, ...JSON.parse(todayProgress) };
+                    }
+                },
+
+                // 加载聊天历史
+                loadChatHistory() {
+                    const saved = localStorage.getItem('aiTutorHistory');
+                    if (saved) {
+                        try {
+                            const history = JSON.parse(saved);
+                            this.messages = history.slice(-20); // 只加载最近20条
+                        } catch (error) {
+                            console.error('加载聊天历史失败:', error);
+                        }
+                    }
+                },
+
+                // 发送消息
+                async sendMessage() {
+                    const message = this.currentMessage.trim();
+                    if (!message || this.isLoading) return;
+
+                    // 添加用户消息
+                    this.addMessage('user', message);
+                    this.currentMessage = '';
+                    this.isLoading = true;
+
+                    const startTime = Date.now();
+
+                    try {
+                        const response = await apiRequest('/ai-tutor/chat', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                message: message,
+                                conversation_history: this.getConversationHistory()
+                            })
+                        });
+
+                        this.responseTime = Date.now() - startTime;
+                        this.todayServices++;
+
+                        if (response.success) {
+                            const aiResponse = response.data;
+
+                            // 添加AI回复
+                            this.addMessage('assistant', aiResponse.content, aiResponse);
+
+                            // 处理特殊响应类型
+                            this.handleSpecialResponse(aiResponse);
+
+                            // 更新统计
+                            this.chatStats.totalChats++;
+                            this.saveChatStats();
+
+                        } else {
+                            throw new Error(response.message || '请求失败');
+                        }
+
+                    } catch (error) {
+                        console.error('发送消息失败:', error);
+                        this.addMessage('assistant', '抱歉，我现在无法回复您的消息，请稍后重试。');
+                        this.showToast('发送失败，请稍后重试', 'error');
+                    } finally {
+                        this.isLoading = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                // 快速发送消息
+                sendQuickMessage(message) {
+                    this.currentMessage = message;
+                    this.sendMessage();
+                },
+
+                // 添加消息到历史
+                addMessage(type, content, data = null) {
+                    const message = {
+                        type,
+                        content,
+                        timestamp: Date.now(),
+                        data
+                    };
+
+                    this.messages.push(message);
+
+                    // 限制消息数量
+                    if (this.messages.length > 50) {
+                        this.messages = this.messages.slice(-40);
+                    }
+
+                    // 保存到localStorage
+                    this.saveChatHistory();
+
+                    // 自动滚动
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                    });
+                },
+
+                // 处理特殊响应
+                handleSpecialResponse(response) {
+                    switch (response.type) {
+                        case 'knowledge_search':
+                            if (response.data && response.data.knowledge_points) {
+                                this.knowledgePoints = response.data.knowledge_points;
+                            }
+                            break;
+                        case 'learning_path':
+                            if (response.data && response.data.paths) {
+                                this.learningPaths = response.data.paths;
+                            }
+                            break;
+                        case 'contribution_request':
+                            // 自动打开贡献模态框
+                            if (response.data && response.data.new_concepts) {
+                                this.contributionForm.name = response.data.new_concepts[0] || '';
+                                this.openContributionModal();
+                            }
+                            break;
+                        case 'learning_assistance':
+                            if (response.data && response.data.current_topic) {
+                                this.currentTopic = response.data.current_topic;
+                            }
+                            break;
+                    }
+                },
+
+                // 选择知识点
+                selectKnowledgePoint(index) {
+                    const point = this.knowledgePoints[index];
+                    this.sendQuickMessage(`我想学习：${point.name}`);
+                },
+
+                // 开始学习步骤
+                startLearningStep(pathIndex, stepIndex) {
+                    const step = this.learningPaths[pathIndex].nodes[stepIndex];
+                    this.sendQuickMessage(`开始学习：${step.name}`);
+
+                    // 更新当前主题
+                    this.currentTopic = step.name;
+                    this.todayProgress.learned++;
+                    this.saveTodayProgress();
+                },
+
+                // 打开贡献模态框
+                openContributionModal() {
+                    this.showContributionModal = true;
+                },
+
+                // 关闭贡献模态框
+                closeContributionModal() {
+                    this.showContributionModal = false;
+                    // 重置表单
+                    this.contributionForm = {
+                        name: '',
+                        description: '',
+                        difficulty: '中级',
+                        category: '编程',
+                        estimated_time: '30分钟',
+                        prerequisites: ''
+                    };
+                },
+
+                // 提交贡献
+                async submitContribution() {
+                    if (this.isSubmittingContribution) return;
+
+                    // 验证表单
+                    if (!this.contributionForm.name.trim() || !this.contributionForm.description.trim()) {
+                        this.showToast('请填写完整信息', 'error');
+                        return;
+                    }
+
+                    this.isSubmittingContribution = true;
+
+                    try {
+                        const response = await apiRequest('/ai-tutor/contribute', {
+                            method: 'POST',
+                            body: JSON.stringify(this.contributionForm)
+                        });
+
+                        if (response.success) {
+                            this.showToast(response.data.message || '贡献成功！已获得10个$PYTHON代币奖励！', 'success');
+                            this.contributionCount++;
+                            this.chatStats.contributions++;
+                            this.user.pythonTokens = (this.user.pythonTokens || 0) + 10;
+                            this.closeContributionModal();
+                            this.saveChatStats();
+                        } else {
+                            throw new Error(response.message || '提交失败');
+                        }
+
+                    } catch (error) {
+                        console.error('提交贡献失败:', error);
+                        this.showToast('提交失败，请稍后重试', 'error');
+                    } finally {
+                        this.isSubmittingContribution = false;
+                    }
+                },
+
+                // 清空聊天
+                clearChat() {
+                    if (confirm('确定要清空所有对话记录吗？')) {
+                        this.messages = [];
+                        this.knowledgePoints = [];
+                        this.learningPaths = [];
+                        localStorage.removeItem('aiTutorHistory');
+                        this.showToast('对话记录已清空', 'info');
+                    }
+                },
+
+                // 键盘事件
+                handleKeyPress(event) {
+                    if (event.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                },
+
+                // 格式化消息内容
+                formatMessage(content) {
+                    if (!content) return '';
+
+                    // 将换行符转换为<br>
+                    content = content.replace(/\n/g, '<br>');
+
+                    // 处理markdown风格的粗体
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                    // 处理代码块
+                    content = content.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+                    return content;
+                },
+
+                // 格式化时间
+                formatTime(timestamp) {
+                    const date = new Date(timestamp);
+                    const now = new Date();
+
+                    if (date.toDateString() === now.toDateString()) {
+                        return date.toLocaleTimeString('zh-CN', {
+                            hour12: false,
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } else {
+                        return date.toLocaleDateString('zh-CN', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                },
+
+                // 获取难度样式类
+                getDifficultyClass(difficulty) {
+                    const classMap = {
+                        '入门': 'difficulty-beginner',
+                        '初级': 'difficulty-basic',
+                        '中级': 'difficulty-intermediate',
+                        '高级': 'difficulty-advanced',
+                        '专家': 'difficulty-expert'
+                    };
+                    return classMap[difficulty] || 'difficulty-intermediate';
+                },
+
+                // 获取Toast图标
+                getToastIcon(type) {
+                    const icons = {
+                        success: '✅',
+                        error: '❌',
+                        warning: '⚠️',
+                        info: 'ℹ️'
+                    };
+                    return icons[type] || 'ℹ️';
+                },
+
+                // 显示Toast
+                showToast(message, type = 'info') {
+                    this.toast = {
+                        show: true,
+                        type,
+                        message
+                    };
+
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 4000);
+                },
+
+                // 滚动到底部
+                scrollToBottom() {
+                    this.$nextTick(() => {
+                        const container = this.$refs.chatMessages;
+                        if (container) {
+                            container.scrollTop = container.scrollHeight;
+                        }
+                    });
+                },
+
+                // 聚焦输入框
+                focusInput() {
+                    this.$nextTick(() => {
+                        if (this.$refs.messageInput) {
+                            this.$refs.messageInput.focus();
+                        }
+                    });
+                },
+
+                // 获取对话历史
+                getConversationHistory() {
+                    return this.messages.slice(-10).map(msg => ({
+                        role: msg.type === 'user' ? 'user' : 'assistant',
+                        content: msg.content
+                    }));
+                },
+
+                // 保存聊天历史
+                saveChatHistory() {
+                    try {
+                        localStorage.setItem('aiTutorHistory', JSON.stringify(this.messages));
+                    } catch (error) {
+                        console.error('保存聊天历史失败:', error);
+                    }
+                },
+
+                // 保存统计数据
+                saveChatStats() {
+                    try {
+                        localStorage.setItem('chatStats', JSON.stringify(this.chatStats));
+                    } catch (error) {
+                        console.error('保存统计数据失败:', error);
+                    }
+                },
+
+                // 保存今日进度
+                saveTodayProgress() {
+                    try {
+                        const today = new Date().toDateString();
+                        localStorage.setItem(`progress_${today}`, JSON.stringify(this.todayProgress));
+                    } catch (error) {
+                        console.error('保存进度失败:', error);
+                    }
+                },
+
+                // 更新统计数据
+                updateChatStats() {
+                    // 这里可以从服务器获取更准确的统计数据
+                    this.chatStats.learnedTopics = Math.floor(this.chatStats.totalChats / 3);
+                },
+
+                // 导航操作
+                goHome() {
+                    window.location.href = 'index.html';
+                },
+
+                logout() {
+                    if (confirm('确定要退出登录吗？')) {
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
