@@ -281,4 +281,4 @@ We are actively working on this project. This is a scene from our educational st
 **English:** Thanks for listening! This is NAVI EDU's vision - finding the ideal balance between learning and creation. We look forward to collaborating with the GIGA Gigabit Accelerator Program to drive the future of educational innovation together.
 
 重大更新：黄金比例算法支持的多智能体架构与可编辑知识图谱，让项目变成强大的私人AI，可本地部署。
-
+Major Update: The multi-agent architecture and editable knowledge graph supported by the golden ratio algorithm transform the project into a powerful private AI that can be deployed locally.
