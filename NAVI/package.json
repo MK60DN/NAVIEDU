@@ -1,0 +1,67 @@
+{
+  "name": "navi",
+  "version": "1.0.0",
+  "description": "智能学习助手 - 基于DeepSeek的多模态学习伙伴",
+  "main": "src/index.js",
+  "homepage": ".",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "lucide-react": "^0.263.1",
+    "axios": "^1.4.0",
+    "web-vitals": "^3.3.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "concurrently \"npm start\" \"cd backend && python main.py\"",
+    "backend": "cd backend && python main.py",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fix": "eslint src --ext .js,.jsx --fix",
+    "format": "prettier --write src/**/*.{js,jsx,css,md}"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "eslint": "^8.45.0",
+    "prettier": "^2.8.8"
+  },
+  "keywords": [
+    "ai",
+    "learning",
+    "deepseek",
+    "knowledge-graph",
+    "education",
+    "react"
+  ],
+  "author": "Navi Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/navi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/navi/issues"
+  }
+}
