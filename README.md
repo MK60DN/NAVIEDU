@@ -284,7 +284,7 @@ We are actively working on this project. This is a scene from our educational st
 Major Update: The multi-agent architecture and editable knowledge graph supported by the golden ratio algorithm transform the project into a powerful private AI that can be deployed locally.
 
 重大更新2：
-1.产品优化
+1.产品优化：灵感源自于线上约会软件tinder与bumble，他们对于主动权的设计和侧滑筛选的设计令人记忆犹新。结合了本项目的模拟金融游戏属性。
 
 识别用户需求，期望在前的先给出知识树，然后分点订正；要求在前的先给出要求内容 再形成知识树。
 
@@ -292,22 +292,20 @@ Major Update: The multi-agent architecture and editable knowledge graph supporte
 
 NAVI的双栏协作更新为分知识点左右侧滑（赞同/质疑）
 
-2.全域营销计划
+2.全域营销计划：灵感源自于游戏机器人
 
 为游戏化知识交易所增加促流动性机器人
 
+
 Major Update 2:
-1. Product Optimization
+1. Product Optimization: Inspired by the online dating apps Tinder and Bumble, their designs for initiative and swiping selection are still fresh in our memory. These elements have been integrated with the simulated financial game nature of this project. 
 
-Identify user needs. For those with expectations 
+Identify user needs. If expectations are stated first, provide the knowledge tree first and then correct it point by point; if requirements are stated first, provide the required content first and then form the knowledge tree. 
 
-first, provide the knowledge tree and then correct it point by point;
- for those with requirements first, provide the required content and then form the knowledge tree.
+Based on the above update, add the futures and spot mechanisms to the knowledge exchange. 
 
-Based on the above update, add futures and spot mechanisms to the knowledge exchange.
+NAVI's dual-column collaborative update has been changed to a left-right sliding format by knowledge points (Agree/Question) 
 
-Update NAVI's dual-column collaboration to left and right sliding by knowledge points (agree/ question).
+2. Omnidirectional Marketing Plan: Inspired by Game Robots 
 
-2. Global Marketing Plan
-
-Add liquidity promotion robots to the gamified knowledge exchange.
+Adding liquidity-promoting robots to the gamified knowledge exchange
