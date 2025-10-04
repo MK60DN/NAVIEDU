@@ -282,3 +282,18 @@ We are actively working on this project. This is a scene from our educational st
 
 重大更新：黄金比例算法支持的多智能体架构与可编辑知识图谱，让项目变成强大的私人AI，可本地部署。
 Major Update: The multi-agent architecture and editable knowledge graph supported by the golden ratio algorithm transform the project into a powerful private AI that can be deployed locally.
+
+重大更新2：
+1.产品优化
+识别用户需求，期望在前的先给出知识树，然后分点订正；要求在前的先给出要求内容 再形成知识树。
+根据以上更新在知识交易所增加期货与现货机制
+NAVI的双栏协作更新为分知识点左右侧滑（赞同/质疑）
+2.全域营销计划
+为游戏化知识交易所增加促流动性机器人
+Major Update 2:
+1. Product Optimization
+Identify user needs. For those with expectations first, provide the knowledge tree and then correct it point by point; for those with requirements first, provide the required content and then form the knowledge tree.
+Based on the above update, add futures and spot mechanisms to the knowledge exchange.
+Update NAVI's dual-column collaboration to left and right sliding by knowledge points (agree/ question).
+2. Global Marketing Plan
+Add liquidity promotion robots to the gamified knowledge exchange.
