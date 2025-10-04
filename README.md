@@ -290,6 +290,7 @@ Major Update: The multi-agent architecture and editable knowledge graph supporte
 NAVI的双栏协作更新为分知识点左右侧滑（赞同/质疑）
 2.全域营销计划
 为游戏化知识交易所增加促流动性机器人
+
 Major Update 2:
 1. Product Optimization
 Identify user needs. For those with expectations first, provide the knowledge tree and then correct it point by point; for those with requirements first, provide the required content and then form the knowledge tree.
