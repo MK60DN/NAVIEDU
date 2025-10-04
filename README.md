@@ -309,3 +309,7 @@ NAVI's dual-column collaborative update has been changed to a left-right sliding
 2. Omnidirectional Marketing Plan: Inspired by Game Robots 
 
 Adding liquidity-promoting robots to the gamified knowledge exchange
+
+我意识到使用开源方式并不能等同于展示财务计划，评估机构并不牢靠。而开源项目的一次MVP实践将是最好的证明。或许我们应该从此入手，签订一种全新的对赌协议。
+
+I realize that adopting an open-source approach does not equate to presenting financial plans, and evaluation institutions are not reliable. A successful MVP practice of an open-source project would be the best proof. Maybe we should start from here and sign a brand-new type of wager agreement.
