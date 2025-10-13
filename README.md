@@ -597,3 +597,42 @@ We are building a learning system that truly **understands the essence of knowle
 *"True knowledge is not accumulation of information, but understanding of patterns" - Navi Design Philosophy*
 
 📖 [Detailed Documentation] | 🔧 [Development Guide] | 🚀 [Get Started] | 💬 [Community Discussion]
+
+重大更新4：存储支持生态延伸
+
+Tree-KG要解决的核心问题是：如何在科研、医疗、法律等知识密集型领域，快速构建高质量且可持续扩展的知识图谱？传统方法面临三大困境——知识复杂度高、人工标注成本巨大、知识更新速度快。实验数据显示，Tree-KG在多个数据集上的F1分数比第二名高出12-16%，在Text-Annotated数据集上达到0.81的F1分数，同时token使用量降低约40%。
+
+项目名称：Tree-KG: An Expandable Knowledge Graph Construction Framework
+
+开发团队：清华大学计算机系
+
+第一作者：Songjie Niu, Kaisen Yang (共同一作)
+
+通讯作者：Hongning Wang, Wenguang Chen
+
+发表会议：ACL 2025 (Association for Computational Linguistics)
+
+开源协议：MIT License
+
+GitHub地址：https://github.com/thu-pacman/Tree-KG
+
+论文链接https://aclanthology.org/2025.acl-long.907.pdf
+
+技术支持：清华大学-鹏城实验室PAC-MAN团队
+
+清华大学深圳国际研究生院
+
+**Major Update 4: Storage Support for Ecosystem Expansion**
+
+The core problem Tree-KG aims to solve is: How can we rapidly construct high-quality and sustainably scalable knowledge graphs in knowledge-intensive fields such as scientific research, healthcare, and law? Traditional methods face three major challenges: high complexity of knowledge, enormous costs of manual annotation, and the rapid pace of knowledge updates. Experimental results show that Tree-KG outperforms the second-best method by 12-16% in F1 score across multiple datasets, achieving an F1 score of 0.81 on the Text-Annotated dataset, while reducing token usage by approximately 40%.
+
+**Project Title:** Tree-KG: An Expandable Knowledge Graph Construction Framework  
+**Development Team:** Department of Computer Science, Tsinghua University  
+**First Authors:** Songjie Niu, Kaisen Yang (Co-first authors)  
+**Corresponding Authors:** Hongning Wang, Wenguang Chen  
+**Published Conference:** ACL 2025 (Association for Computational Linguistics)  
+**Open Source License:** MIT License  
+**GitHub Address:** https://github.com/thu-pacman/Tree-KG  
+**Paper Link:** https://aclanthology.org/2025.acl-long.907.pdf  
+**Technical Support:** Tsinghua University - Peng Cheng Laboratory PAC-MAN Team  
+Shenzhen International Graduate School, Tsinghua University
