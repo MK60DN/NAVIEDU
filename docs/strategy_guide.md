@@ -1,6 +1,6 @@
 # 策略推理指南
 
-> **Tender v2.0 — Embracing Heterogeneity**
+> **Tender  — Embracing Heterogeneity**
 >
 > 本指南详细介绍如何使用 `strategy/` 模块基于融合结果和协同结果进行策略推理与干预决策。
 
@@ -165,7 +165,7 @@ class LLMStrategistEngine:
             return self._get_fallback_strategy()
 ```
 
-## 4. 🆕 异质性协调层
+## 4. 异质性协调层
 
 异质性协调层替代了原 Tender 框架中的共识化过滤层。它不再追求"共识"，而是在承认异质性的前提下，对基础策略进行多目标优化调整。
 
