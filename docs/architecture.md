@@ -214,7 +214,7 @@ def analyze_window(self, messages):
 
 ### 3.3 数据模型
 
-Tender v2.0 定义了以下核心数据类（位于各模块的 `base.py` 或 `*_result.py`）：
+Tender 定义了以下核心数据类（位于各模块的 `base.py` 或 `*_result.py`）：
 
 | 数据类 | 模块 | 核心字段 |
 |:---|:---|:---|
