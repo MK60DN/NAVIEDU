@@ -1,8 +1,8 @@
 # 架构设计文档
 
-> **Tender v2.0 — Embracing Heterogeneity**
+> **Tender  — Embracing Heterogeneity**
 >
-> 版本：2.0.0 | 最后更新：2026-06-05
+> 版本：1.0.0 | 最后更新：2026-06-05
 
 ## 1. 架构总览
 
