@@ -47,7 +47,7 @@ Tender 采用分层插件架构，自上而下分为：
 ### 2. 克隆仓库
 
 ```bash
-git clone <your-repository-url>
+git clone git clone https://github.com/MK60DN/Tender
 cd tender
 ```
 
