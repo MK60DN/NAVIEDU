@@ -1,164 +1,171 @@
-# Tender — 群聊情绪时空动力学分析与干预框架
+# Tender: 拥抱异质性 —— 群体情绪时空动态分析框架
 
-> **用拓扑学刻画情绪的空间结构，用因果推断揭示情绪的时间流向。**
->
-> — 让每一位群主都拥有一台情绪时空导航仪
+Tender 是一个面向群聊环境的群体情绪时空动态分析框架。它整合了拓扑数据分析与时间因果推断技术，能够揭示集体情绪状态的"形状"和流动规律，将隐性的群体动态模式转化为可量化、可推理、可干预的结构化信息。
 
-Tender 是一个融合了持续同调与格兰杰因果检验的群体情绪动力学开源框架。它能够实时分析群聊中成员的情绪状态，监测情绪的“形状”与“流动”，并基于可替换的模块化架构，为群主提供精准的干预策略建议。
-
----
-
-## 目录
-
-- [项目简介与核心思想](#项目简介与核心思想)
-- [核心特性](#核心特性)
-- [整体架构](#整体架构)
-- [快速开始](#快速开始)
-- [Pipeline 工作流程](#pipeline-工作流程)
-- [模块详解](#模块详解)
-- [学术基础](#学术基础)
-- [许可证](#许可证)
-
----
-
-## 项目简介与核心思想
-
-传统群聊管理依赖群主的主观经验，难以量化群体情绪的微妙变化。Tender 用一套可计算、可解释、可干预的方法论来解决这一问题，其核心在于**模块可替换**。
-
-1. **空间结构**：通过持续同调分析成员情绪在三维空间中的拓扑形状，发现情绪簇、矛盾环和离群者。可替换方案包括持续拉普拉斯算子、拓扑梯度流。
-2. **时间流向**：通过格兰杰因果检验构建成员之间的情绪传染网络，识别超级传播者与关键接收者。可替换方案包括收敛交叉映射、结构因果模型、LiNGAM。
-3. **时空融合**：将空间特征与时间特征统一在动态因果拓扑图中，并预测下一窗口的群体情绪趋势。可替换方案包括动态因果图神经网络、神经时序逻辑。
-4. **闭环干预**：基于融合特征向量匹配预定义的引导策略。可替换方案包括因果强化学习引擎、大语言模型策略引擎。
-5. **共识优化**：可选的后处理过滤层，在不修改上游数学建模的前提下，根据共识度和互惠指数优化策略推荐，促进群体共同点的发现。
-
----
+它核心设计是"拥抱异质性"。我们认为，一个健康的群体并非由完全同构的个体组成，而是在承认并尊重差异的前提下，由不同类型成员共同维持的动态平衡系统。本框架的目的不是在群体内部强制共识，而是去理解这种复杂性，并帮助管理者在异质性中找到促进群体健康发展的最佳策略。
 
 ## 核心特性
 
-- **拓扑情绪分析**：利用持续同调检测情绪点云中的聚类、分歧环和孤立节点，揭示群体情绪的隐形结构。
-- **因果情绪推断**：基于格兰杰因果检验，量化成员之间情绪影响的方向、强度和滞后性。
-- **时空融合表示**：将拓扑特征与因果特征拼接为12维融合特征向量，用于后续策略匹配。
-- **时序预测**：使用向量自回归模型预测下一时间步的情绪状态，实现前瞻性干预。
-- **插件式架构**：每个模块均基于抽象基类设计，支持通过配置文件一键切换算法实现。
-- **可插拔共识优化**：可选的后处理共识化过滤层，在保留原数学建模的同时，为愿意促进和谐的群主提供更丰富的工具。
+*   **多维度分析**：从情绪、认知、拓扑、因果四个维度量化群体状态。
+*   **异质性优先**：内置异质性分析模块，识别离群者、不匹配模式，并设计针对性的协调策略。
+*   **可插拔引擎**：核心分析模块均支持通过配置文件动态切换不同的算法实现（如多种因果推断、融合策略）。
+*   **全链路管道**：提供从原始消息输入到策略输出的完整、自动化分析流程。
+*   **可解释性**：神经符号架构与结构因果模型等技术让AI分析过程透明、可审计。
+*   **交互式学习应用**：配套 Tender APP，将后端分析能力转化为面向学生和教师的交互式学习与教学管理产品。
 
----
+## 架构总览
 
-## 整体架构
+Tender 采用分层插件架构，自上而下分为：
 
-整个框架由六个核心模块组成，通过管道编排器按序执行。数据流从原始消息开始，依次经过情绪向量化、空间拓扑分析、时间因果分析、时空融合、策略推理，最后输出策略决策。其中，第五步之后可选接一个共识化过滤层，用于在保持上游数学建模不变的前提下，从共识角度优化策略推荐。
+### 应用与可视化层 (Application & Visualization Layer)
 
-每个模块均遵循插件式架构，通过配置文件中的 engine 字段即可切换不同的算法实现，无需修改任何上游或下游代码。
+*   **Tender APP**：面向学生和教师的交互式学习与群体管理平台。
+    *   **教师端**：提供群体总览、成员画像、情绪拓扑可视化、策略推荐等管理功能。
+    *   **学生端**：通过递进式学习协议（L1-L4）和元认知对话，引导用户深度学习。
 
-核心数据流：原始消息 → EmotionVector → TopologyResult + CausalResult → FusionResult → StrategyDecision → [可选] 共识化过滤层 → 优化后的策略决策
+### 策略与决策层 (Strategy & Decision Layer)
 
----
+*   **策略推理模块 (strategy/)**：基于分析结果，输出风险等级与干预策略。
+*   **异质性协调层 (Heterogeneity Coordination Layer)**：在策略中加入对群体异质性的考量，生成多目标优化策略。
+
+### 核心分析层 (Core Analysis Layer)
+
+*   **情绪向量化 (emotion\_vectorizer/)**：将文本消息转换为连续的三维情绪向量（愉悦度、唤醒度、专注度）。
+*   **空间拓扑分析 (topology\_analysis/)**：分析群体情绪在空间上的聚类、环状结构及离群点。
+*   **时间因果分析 (causal\_analysis/)**：分析成员间情绪影响的因果网络，识别"超级传播者"。
+*   **时空融合 (fusion/)**：将拓扑与因果分析结果融合，预测群体情绪未来走势。
+*   **认知状态分析 (cognition/)**：推断成员的认知负荷、理解水平与认知阶段。
+*   **情绪-认知协同 (synergy/)**：分析群体情绪状态与认知发展阶段的匹配度。
+*   **异质性分析 (heterogeneity/)**：量化群体在拓扑、因果、行为、认知维度的差异。
+*   **个人-群体匹配检测 (mismatch/)**：识别个体的行为、情绪或认知是否与群体主流模式存在系统性差异。
+
+### 基础设施层 (Infrastructure Layer)
+
+*   **配置管理 (config\_loader.py)**：加载并验证YAML配置文件。
+*   **通用工具 (utils/)**：提供通用功能支持。
 
 ## 快速开始
 
-### 环境要求
+### 1. 环境准备
 
-- Python 3.10+
+*   **Python**: >= 3.11
+*   **依赖**: 使用 pip 安装。
 
-### 安装与运行
+### 2. 克隆仓库
 
-1. 克隆仓库。
-2. 安装依赖。
-3. 编辑 config.yaml 配置文件，至少设置 emotion_vectorizer 的 model_name。
-4. 运行入口示例：`python -m tender.pipeline.example`
+```bash
+git clone <your-repository-url>
+cd tender
+```
 
----
+### 3. 安装依赖
 
-## Pipeline 工作流程
+Tender 的依赖分为核心依赖和新功能可选依赖，安装方式如下：
 
-Tender 的整个分析流程通过 TenderPipeline 编排，每调用一次 analyze_window 即可完成一个时间窗口的完整分析。
+仅安装核心依赖（用于基础分析）：
 
-流程步骤：
-1. 情绪向量化：将原始消息转换为三维情绪向量。
-2. 空间拓扑分析：检测聚类、环和离群点。
-3. 时间因果分析：检测情绪影响关系。
-4. 时空融合：构建融合特征向量并预测。
-5. 策略推理：评估风险并进行干预。
-6. 共识化过滤：可选的后处理步骤，根据共识度优化策略推荐。
+```bash
+pip install -r requirements.txt
+```
 
----
+安装所有依赖（包含深度学习、LLM、可视化等）：
 
-## 模块详解
+```bash
+pip install -e ".[dev,dl,llm,vis]"
+# 或等效于完整安装
+pip install -e .
+```
 
-### 1. 情绪向量化模块 emotion_vectorizer
+可选依赖组包括：`dev` (开发)、`dl` (深度学习)、`llm` (大语言模型)、`tda` (拓扑数据分析)、`vis` (可视化)。
 
-这一模块负责将群聊中原始的文本消息转换为连续的三维情绪向量，是整个分析流程的入口。模块遵循插件式架构，基于抽象基类定义统一接口。
+### 4. 配置
 
-默认实现 LLMVectorizer 直接使用大语言模型从文本中端到端推断三个情绪维度的数值。可替换方案 NeuroSymbolicVectorizer 采用两步法：先提取结构化的事件三元组，再通过符号规则映射到情绪空间，可解释性更强。MultimodalVectorizer 则融合文本语义、表情符号行为、社交交互特征等多模态信号，适合具备多模态数据采集能力的环境。
+所有核心模块的配置参数都在 `config.yaml` 中管理。你可以根据需求修改此文件以切换各个分析模块的引擎和参数。
 
-核心输出是一个以成员ID为键、情绪向量为值的字典。
+### 5. 运行示例
 
-### 2. 空间拓扑分析模块 topology_analysis
+仓库提供多种使用场景的示例脚本，位于 `examples/` 目录下：
 
-这一模块的核心任务是对情绪点云进行拓扑结构分析，揭示群体情绪的隐形空间结构。默认实现 PersistentHomologyAnalyzer 通过持续同调计算情绪点云在不同尺度下的拓扑特征，并借助 HDBSCAN 自动发现情绪派系。
+```bash
+# 基础分析管道
+python examples/basic_pipeline.py
 
-预留的可替换方案中，PersistentLaplacianAnalyzer 基于持续拉普拉斯算子提供更精细的流形结构信息；TopologicalGradientFlowAnalyzer 从拓扑梯度流的角度追踪情绪结构的动态演变。
+# 全链路分析示例
+python examples/full_pipeline.py
 
-核心输出 TopologyResult 包含四个关键字段：情绪派系数量、是否存在情绪矛盾环、离群成员比例、全局情绪重心。
+# 异质性分析示例
+python examples/heterogeneity_analysis.py
 
-### 3. 时间因果分析模块 causal_analysis
+# 不匹配检测示例
+python examples/mismatch_detection.py
 
-这一模块的目标是构建成员之间的有向因果网络，量化情绪的传染关系。默认实现 GrangerCausalityAnalyzer 利用格兰杰因果检验进行统计分析。
+# 自愿隔离者案例分析
+python examples/voluntary_isolate.py
+```
 
-模块提供了三种可替换方案以适应不同的数据特性。ConvergentCrossMappingAnalyzer 适用于非线性系统；StructuralCausalModelAnalyzer 基于结构因果图谱理论处理更复杂的因果结构；PCLiNGAMAnalyzer 结合 PC 算法与线性非高斯无环模型，擅长在观测数据中发现因果方向。
+## 模块详解与API参考
 
-核心输出 CausalResult 包含有向网络图、超级传播者列表和因果密度。
+Tender 框架包含12个功能模块，每个模块都提供了清晰的公共接口。我们建议你查阅 `/docs/api_reference.md` 以获取详细的API文档（包括类、函数、参数与返回值说明）。
 
-### 4. 时空融合模块 fusion
+| 模块                  | 文档                      | 核心功能                 |
+| ------------------- | ----------------------- | -------------------- |
+| pipeline            | /docs/api\_reference.md | 管道编排，配置加载与验证         |
+| emotion\_vectorizer | /docs/api\_reference.md | 文本消息到情绪向量的转换         |
+| topology\_analysis  | /docs/api\_reference.md | 群体情绪的空间结构分析（聚类、环状结构） |
+| causal\_analysis    | /docs/api\_reference.md | 情绪影响的因果网络构建与关键角色识别   |
+| fusion              | /docs/api\_reference.md | 时空特征融合与未来情绪预测        |
+| cognition           | /docs/api\_reference.md | 群体认知状态分析（认知负荷、理解水平等） |
+| synergy             | /docs/api\_reference.md | 情绪-认知协同状态分析          |
+| heterogeneity       | /docs/api\_reference.md | 多维度异质性量化分析，离群者分类     |
+| mismatch            | /docs/api\_reference.md | 个人-群体不匹配检测与自洽性评估     |
+| strategy            | /docs/api\_reference.md | 风险等级评估与策略推理          |
+| visualization       | /docs/api\_reference.md | 数据可视化功能              |
+| config              | /docs/api\_reference.md | 通用的配置加载与合并工具         |
 
-这一模块将空间拓扑分析结果与时间因果分析结果融合为统一的数学表示。默认实现 FeatureVectorFusion 采用特征拼接策略，将6维空间特征与6维时间特征拼接成12维融合特征向量，并使用向量自回归模型预测下一窗口的情绪状态。
+## 设计原则与使用指南
 
-预留的可替换方案中，DCTGNN 利用图神经网络捕捉更复杂的时空依赖关系；NeuralTemporalLogicFusion 将时序逻辑规则嵌入神经网络，在保持可解释性的同时提升推理能力。
+在深入使用 Tender 之前，请理解其核心设计原则。这有助于你更好地解读分析结果并做出决策。
 
-核心输出 FusionResult 包含12维融合特征向量、动态因果拓扑图和下一窗口的情绪预测。
+*   **异质性是一种信息，而非噪音**：每一种偏离主流的模式都在讲述一个独特的故事。
+*   **自洽性压倒融入度**：一个自洽的、自愿不融入的个体不应被视为问题，其独特性可能是群体的宝贵资源。
+*   **先理解，再干预**：在做出任何决策前，请先从拓扑、行为、认知等多个角度去理解"为什么会这样"。
+*   **并行策略**：针对异质性高的群体，放弃寻找"一刀切"的策略，设计多条策略并行实施。
 
-### 5. 策略推理模块 strategy
+详细的哲学讨论请阅读 `/docs/philosophy.md`。异质性分析的具体策略请参考 `/docs/heterogeneity_guide.md`。策略推理的详细说明请参考 `/docs/strategy_guide.md`。情绪-认知协同的方法论请参考 `/docs/synergy_guide.md`。
 
-这一模块根据融合结果评估风险等级并匹配干预策略。默认实现 RuleBasedStrategyEngine 通过预定义阈值计算综合风险评分，映射到五个风险等级。
+## 开发指南
 
-可替换方案 CausalRLEngine 将策略推理建模为马尔可夫决策过程，通过与环境的交互学习最优策略。LLMStrategistEngine 将融合结果序列化为结构化文本，利用大语言模型的语义理解能力生成更具上下文感知能力的策略建议。
+### 运行测试
 
-策略引擎同时支持共识化过滤层作为后处理步骤。当启用时，共识化过滤层会计算共识分数和互惠指数，在不修改上游数学建模的前提下，对策略推荐进行优化，当检测到低共识或低互惠模式时，会在原有策略基础上加入促进共同点和双向交流的建议。
+本项目使用 pytest 进行测试。测试用例按模块组织在 `tests/` 目录下。
 
-### 6. 管道编排模块 pipeline
+```bash
+# 运行所有测试
+pytest
 
-管道编排模块通过 TenderPipeline 将上述分析阶段编排为完整的处理流程。它在初始化时加载配置文件并动态实例化各模块，维护完整的分析历史字典。
+# 运行特定模块测试
+pytest tests/test_emotion_vectorizer.py
+```
 
-核心方法 analyze_window 接受成员消息字典和时间窗口参数，依次执行五个分析步骤，并根据配置决定是否执行共识化过滤，最终返回一个完整的策略决策结果。
+### 代码规范
 
----
+*   **格式化**：项目使用 black 与 isort 进行代码格式化。
+*   **命名**：遵循 PEP 8 规范。
 
-## 学术基础
+### 贡献
 
-Tender 的设计深受以下领域的启发：
+我们欢迎任何形式的贡献，包括但不限于：
 
-1. 情绪维度理论：Russell 的情感环状模型、Mehrabian 的愉悦-唤醒-支配框架。
-2. 拓扑数据分析：Edelsbrunner 的持续同调理论、Ghrist 的拓扑数据条形码分析。
-3. 时间序列因果推断：Granger 的因果检验方法、Sugihara 的收敛交叉映射。
-4. 群体情绪动力学：Barsade 的情绪传染涟漪效应、Hatfield 的情绪传染理论。
-5. 教育学引导策略：Vygotsky 的最近发展区理论、Schwartz 的学习科学框架。
+*   报告 Bug 或提出 Feature Request
+*   提交 Pull Request 修复 Bug 或添加新功能
+*   完善文档和测试用例
 
----
+如果你有兴趣为 Tender 贡献代码，请先阅读 `CONTRIBUTING.md`（若存在）。
+
+## 致谢
+
+本项目的开发基于多项优秀的研究成果，包括但不限于：持续同调（Persistent Homology）、结构因果模型（SCM）、图卷积网络（GCN）、收敛交叉映射（CCM）等。向所有为该领域做出贡献的研究者表示感谢。
 
 ## 许可证
 
-**Apache License, Version 2.0**
-
-Copyright [Year] [Copyright Owner]
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Tender 遵循 Apache License Version 2.0 许可证。
