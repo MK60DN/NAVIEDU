@@ -1,6 +1,6 @@
 # 情绪-认知协同指南
 
-> **Tender v2.0 — Embracing Heterogeneity**
+> **Tender  — Embracing Heterogeneity**
 >
 > 本指南详细介绍如何使用 `synergy/` 模块将情绪分析结果与认知分析结果进行深度融合。
 
