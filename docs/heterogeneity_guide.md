@@ -1,6 +1,6 @@
 # 异质性分析指南
 
-> **Tender v2.0 — Embracing Heterogeneity**
+> **Tender  — Embracing Heterogeneity**
 >
 > 本指南详细介绍如何使用 `heterogeneity/` 模块对群体中的异质性进行系统识别与量化。
 
