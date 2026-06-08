@@ -1,8 +1,8 @@
 # API 参考文档
 
-> **Tender v2.0 — Embracing Heterogeneity**
+> **Tender  — Embracing Heterogeneity**
 >
-> 版本：2.0.0 | 最后更新：2026-06-05
+> 版本：1.0.0 | 最后更新：2026-06-05
 
 本文档提供了 Tender 框架的核心类和函数的 API 参考。按模块组织结构，分别列出每个模块的主要公开接口。
 
